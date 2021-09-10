@@ -19,5 +19,5 @@
 
 <br>
 
-Head on over to our project board to view our progress! -> [Project Board](https://github.com/users/alamsah2/projects/1)<br>
+Head on over to our project board to view our progress! -> [Project Board](https://github.com/alamsah2/ICT2101-2201_P3-8_Project/projects/1)<br>
 Our team members: [@Alam](https://github.com/users/alamsah2/) [@Hui Qi](https://github.com/lohhuiqi) [@Joshua](https://github.com/JoshuaLSE) [@Matthew](https://github.com/Matt1998)
