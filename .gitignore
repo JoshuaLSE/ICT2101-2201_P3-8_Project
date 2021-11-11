@@ -1,0 +1,10 @@
+.ccsproject
+.cproject
+.project
+msp432p401r.cmd
+system_msp432p401r.c
+/CAR_PROJECT/.launches
+/CAR_PROJECT/.settings
+/CAR_PROJECT/ccs
+/CAR_PROJECT/Debug
+/CAR_PROJECT/targetConfigs
