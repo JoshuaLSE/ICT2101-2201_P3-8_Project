@@ -9,6 +9,6 @@
 9. almost the same as a rel branch but works off prev release version
 10. other developers continue work off the dev branch
 11. testing gif 
-[![Alt Text](https://media.giphy.com/media/vFKqnCdLPNOKc/giphy.gif)]
+/n![Alt Text](https://media.giphy.com/media/vFKqnCdLPNOKc/giphy.gif)
 13. testing movie
-[![Watch the video](https://img.youtube.com/vi/T-D1KVIuvjA/maxresdefault.jpg)](https://youtu.be/T-D1KVIuvjA)
+/n[![Watch the video](https://img.youtube.com/vi/T-D1KVIuvjA/maxresdefault.jpg)](https://youtu.be/T-D1KVIuvjA)
