@@ -8,3 +8,4 @@
 8. use tags to demarcate rel versions in master branch
 9. almost the same as a rel branch but works off prev release version
 10. other developers continue work off the dev branch
+11. testing gif ![Alt Text](https://media.giphy.com/media/vFKqnCdLPNOKc/giphy.gif)
