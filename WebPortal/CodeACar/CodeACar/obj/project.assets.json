@@ -8,19 +8,19 @@
     "net6.0": []
   },
   "packageFolders": {
-    "C:\\Users\\tseki\\.nuget\\packages\\": {}
+    "C:\\Users\\alamhamzah\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\OneDrive - Singapore Institute Of Technology\\ICT2201-Introduction to Software Engineering\\Assignment\\Github\\ICT2101-2201_P3-8_Project\\WebPortal\\CodeACar\\CodeACar\\CodeACar.csproj",
+      "projectUniqueName": "C:\\Users\\alamhamzah\\Source\\Repos\\JoshuaLSE\\ICT2101-2201_P3-8_Project\\WebPortal\\CodeACar\\CodeACar\\CodeACar.csproj",
       "projectName": "CodeACar",
-      "projectPath": "D:\\OneDrive - Singapore Institute Of Technology\\ICT2201-Introduction to Software Engineering\\Assignment\\Github\\ICT2101-2201_P3-8_Project\\WebPortal\\CodeACar\\CodeACar\\CodeACar.csproj",
-      "packagesPath": "C:\\Users\\tseki\\.nuget\\packages\\",
-      "outputPath": "D:\\OneDrive - Singapore Institute Of Technology\\ICT2201-Introduction to Software Engineering\\Assignment\\Github\\ICT2101-2201_P3-8_Project\\WebPortal\\CodeACar\\CodeACar\\obj\\",
+      "projectPath": "C:\\Users\\alamhamzah\\Source\\Repos\\JoshuaLSE\\ICT2101-2201_P3-8_Project\\WebPortal\\CodeACar\\CodeACar\\CodeACar.csproj",
+      "packagesPath": "C:\\Users\\alamhamzah\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\alamhamzah\\Source\\Repos\\JoshuaLSE\\ICT2101-2201_P3-8_Project\\WebPortal\\CodeACar\\CodeACar\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\tseki\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\alamhamzah\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -63,7 +63,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.100\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\x64\\sdk\\6.0.100\\RuntimeIdentifierGraph.json"
       }
     }
   }
