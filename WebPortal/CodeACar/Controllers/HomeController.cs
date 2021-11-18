@@ -20,7 +20,16 @@ namespace CodeACar.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            var userRole = this.HttpContext.Request.Cookies["role"]; // Get the cookie value containing the role of the user from the web browser
+            if (string.IsNullOrEmpty(userRole) || (userRole != "Admin" && userRole != "Teacher" && userRole != "Student"))
+            {
+                return RedirectToAction("Login", "User"); //Redirect user back to Home Page if the user has not logged in
+            }
+            else
+            {
+                ViewData["role"] = userRole; //Store the role of the user inside the view data for authenticating the user
+                return View("index"); //Return the view with the cshtml file "Index.cshtml" in the "User" folder under "Views"
+            }
         }
 
         public IActionResult Privacy()
