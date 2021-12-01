@@ -1,0 +1,33 @@
+﻿@model CodeACar.Models.User;
+@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Admin Login</h1>
+</div>
+<div class="col-md-6 mx-auto">
+    @if (ViewData.ContainsKey("message"))
+    {
+    <div class="alert alert-danger alert-dismissible fade show">
+        @ViewData["message"]
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    }
+    <!---Specify the method name to manage the login data in the "asp-action" attribute-->
+    <form asp-action="Login">
+        <div class="form-group">
+            <label for="tbUsername">Username</label>
+            <!--Always specify the query parameter name in "name" attribute i.e. name="Username" would refer to the "Username=" part in the url: localhost:5000/user/login?Username=MyUsername&password=123456-->
+            <input name="Username" class="form-control" id="tbUsername">
+        </div>
+        <div class="form-group">
+            <label for="tbPassword">Password</label>
+            <!--Always specify the query parameter name in "name" attribute i.e. name="Username" would refer to the "Password=" part in the url: localhost:5000/user/login?Username=MyUsername&password=123456-->
+            <input name="Password" type="password" class="form-control" id="tbPassword">
+        </div>
+        <input type="submit" value="Login" class="btn btn-primary btn-block"/>
+    </form>
+</div>
