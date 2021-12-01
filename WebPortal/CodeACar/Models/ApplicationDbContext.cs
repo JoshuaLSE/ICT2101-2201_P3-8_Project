@@ -6,5 +6,8 @@ namespace CodeACar.Models
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         { }
+
+        //Db sets representing the tables
+        public DbSet<User> Users { get; set; }
     }
 }

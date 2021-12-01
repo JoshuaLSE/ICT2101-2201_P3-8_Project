@@ -16,15 +16,55 @@
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
+                        @if (!ViewData.ContainsKey("role") || string.IsNullOrEmpty(ViewData["role"].ToString()))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            </li>
+ }
+                        else
+                        {
+                            @if (ViewData["role"].ToString() == "Admin")
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Home">Home</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Manage">Teachers</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Challenge" asp-action="Manage">Challenge</a>
+                                </li>
+ }
+                            else if (ViewData["role"].ToString() == "Teacher")
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Home">Home</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Challenge" asp-action="Manage">Challenge</a>
+                                </li>
+ }
+                            else
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Student" asp-action="Index">Home</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Challenge" asp-action="Index">Challenge</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Challenge" asp-action="History">Challenge History</a>
+                                </li>
+}}
                     </ul>
+                    @if (ViewData.ContainsKey("role") && !string.IsNullOrEmpty(ViewData["role"].ToString()))
+                    {
+                        <ul class="navbar-nav">
+                            <li><a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Logout">Log out</a></li>
+                        </ul>}
                 </div>
             </div>
         </nav>
