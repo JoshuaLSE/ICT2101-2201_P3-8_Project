@@ -3,6 +3,9 @@
 #include <stdbool.h>
 #include <sys_values.h>
 #include <sys_API.h>
+#include <ESP8266.h>
+#include <UART_Driver.h>
+#include <MSPIO.h>
 
 //  _____      ____  __  __   ___   ___ ___   _   ___ _    ___ ___
 // | _ \ \    / /  \/  | \ \ / /_\ | _ \_ _| /_\ | _ ) |  | __/ __|
@@ -10,18 +13,19 @@
 // |_|   \_/\_/ |_|  |_|   \_/_/ \_\_|_\___/_/ \_\___/____|___|___/
 //
 
-#define PERIOD      10000
+#define PERIOD      1000
 #define DUTYCYCLE   0000
 
 /*
  * Movement API is MOV[direction, speed, duration]
  * Direction:   1 - forward, 2 - right, 3 - backwards, 4 - left
- * Speed:       0 - slow, 1 - fast
  * Duration:    5 to 10 seconds
  */
 
 int COUNTR;
 int COUNTL;
+
+int emergencyTrig;
 
 int Direction;
 int Speed;
@@ -29,24 +33,22 @@ int Duration;
 int facingDirection;
 int TimerCount;
 bool pwmCompleted; //declared as global variable in sys_values.h
-int LOWSPEED[2] = {3200, 3300};
-int HIGHSPEED[2] = {4650, 4800};
-
+int SPEED[2] = { 800, 880 };
 /*
  * Timer_A PWM Configuration Parameter
  * Starting at 0% duty cycle
  * Lower speed will be at 25%
  * Higher speed will be at 50%
  */
-Timer_A_PWMConfig pwmConfigL = { TIMER_A_CLOCKSOURCE_SMCLK, //REF: SMCLK FREQ is 3MHz
-        TIMER_A_CLOCKSOURCE_DIVIDER_10,   //Used: FREQ is 125kHz
+Timer_A_PWMConfig pwmConfigL = { TIMER_A_CLOCKSOURCE_ACLK, //REF: SMCLK FREQ is 3MHz 32.768khz
+        TIMER_A_CLOCKSOURCE_DIVIDER_1,   //Used: FREQ is 125kHz
         PERIOD,
         TIMER_A_CAPTURECOMPARE_REGISTER_2, //CCR2
         TIMER_A_OUTPUTMODE_RESET_SET,
         DUTYCYCLE };
 
-Timer_A_PWMConfig pwmConfigR = { TIMER_A_CLOCKSOURCE_SMCLK,
-TIMER_A_CLOCKSOURCE_DIVIDER_10,
+Timer_A_PWMConfig pwmConfigR = { TIMER_A_CLOCKSOURCE_ACLK,
+TIMER_A_CLOCKSOURCE_DIVIDER_1,
                                  PERIOD,
                                  TIMER_A_CAPTURECOMPARE_REGISTER_1, //CCR1
                                  TIMER_A_OUTPUTMODE_RESET_SET,
@@ -54,8 +56,8 @@ TIMER_A_CLOCKSOURCE_DIVIDER_10,
 
 Timer_A_UpModeConfig timerConfig = {
 TIMER_A_CLOCKSOURCE_SMCLK,             // SMCLK Clock Source
-        TIMER_A_CLOCKSOURCE_DIVIDER_64, // SMCLK = 3MHz, therefore /64 = 46.875KHz
-        46874,             // 50000 tick period, limited to 16 bits
+        TIMER_A_CLOCKSOURCE_DIVIDER_24, // SMCLK = 3MHz, therefore /64 = 46.875KHz
+        50000,             // 50000 tick period, limited to 16 bits
         TIMER_A_TAIE_INTERRUPT_DISABLE,             // Disable Timer interrupt
         TIMER_A_CCIE_CCR0_INTERRUPT_ENABLE,             // Enable CCR0 interrupt
         TIMER_A_DO_CLEAR             // Clear value
@@ -70,7 +72,7 @@ TIMER_A_CLOCKSOURCE_SMCLK,             // SMCLK Clock Source
 #define KP 1.3
 #define KD 0.25
 #define KI 0.025
-float target[2] = { 12, 19 };
+float target[2] = { 27, 19 };
 
 int Counter_L;
 float Counter_L_Prev;
@@ -119,6 +121,8 @@ void pid(void)
     // Store counter locally
     float Stored_L = Counter_L;
     float Stored_R = Counter_R;
+//    printf("L: %.1f, R: %.2f\n", Stored_L,Stored_R);
+//    fflush(stdout);
     // Reset counter for easier calculation
     Counter_L = 0;
     Counter_R = 0;
@@ -145,6 +149,8 @@ void pid(void)
     Counter_R_Sum += currentError_R;
 
     Timer_A_generatePWM(TIMER_A0_BASE, &pwmConfigR);
+//    printf("L: %d, R: %d\n", pwmConfigL.dutyCycle, pwmConfigR.dutyCycle);
+//    fflush(stdout);
 //    printf("TargetSpeed: %.3f\n"
 //           "Right Counter: %.2f  Right current Error: %.3f  Right adj:%.3f  Right DC: %d\n"
 //           "Left Counter: %.2f  Left current Error: %.3f  Left adj:%.3f  Left DC: %d\n\n",
@@ -180,16 +186,12 @@ void initialisePWM(int initialDirection)
     //Enable A - RIGHT Wheel
     GPIO_setAsOutputPin(GPIO_PORT_P3, GPIO_PIN0);
     GPIO_setAsOutputPin(GPIO_PORT_P5, GPIO_PIN6);
-    GPIO_setOutputHighOnPin(GPIO_PORT_P3, GPIO_PIN0);    // YELLOW   IN1
-    GPIO_setOutputLowOnPin(GPIO_PORT_P5, GPIO_PIN6);   // ORANGE   IN2
     GPIO_setAsPeripheralModuleFunctionOutputPin(GPIO_PORT_P2, GPIO_PIN4,
     GPIO_PRIMARY_MODULE_FUNCTION); //ena
 
     //Enable B - LEFT Wheel
     GPIO_setAsOutputPin(GPIO_PORT_P5, GPIO_PIN7);
     GPIO_setAsOutputPin(GPIO_PORT_P6, GPIO_PIN6);
-    GPIO_setOutputLowOnPin(GPIO_PORT_P5, GPIO_PIN7);    // RED      IN3
-    GPIO_setOutputHighOnPin(GPIO_PORT_P6, GPIO_PIN6);   // BROWN    IN4
     GPIO_setAsPeripheralModuleFunctionOutputPin(GPIO_PORT_P2, GPIO_PIN5,
     GPIO_PRIMARY_MODULE_FUNCTION); //enb
 
@@ -206,16 +208,6 @@ void initialisePWM(int initialDirection)
     Timer_A_clearTimer(TIMER_A1_BASE);
 }
 
-// Function to stop the vehicle - To be called by UART
-void emergencyStop(void)
-{
-    pwmConfigL.dutyCycle = 0;
-    pwmConfigR.dutyCycle = 0;
-    Timer_A_generatePWM(TIMER_A0_BASE, &pwmConfigL);
-    Timer_A_generatePWM(TIMER_A0_BASE, &pwmConfigR);
-    Timer_A_stopTimer(TIMER_A1_BASE);
-}
-
 // API for movement
 int MOV(int direction, int speed, int duration)
 {
@@ -226,72 +218,42 @@ int MOV(int direction, int speed, int duration)
      * 3) Set power config
      * 4) Start timer
      */
-    pwmCompleted = false;
-    int internal_speed_L = LOWSPEED[0];
-    int internal_speed_R = LOWSPEED[1];
     // Set up timer duration
-    Duration = duration;
+    emergencyTrig = 0;
+    Duration = duration * 20;
     // Reset TimerCount
     TimerCount = 0;
-
-    switch (speed)
-    {
-    case 0:
-        internal_speed_L = LOWSPEED[0];
-        internal_speed_R = LOWSPEED[1];
-        Speed = 0;
-        break;
-    case 1:
-        internal_speed_L = HIGHSPEED[0];
-        internal_speed_R = HIGHSPEED[1];
-        Speed = 1;
-        break;
-    default:
-        return 2; //error - speed is invalid
-    }
+    pwmConfigR.dutyCycle = SPEED[1];
+    pwmConfigL.dutyCycle = SPEED[0];
 
     switch (direction)
     {
     case 1:     //forwards
-        if (Direction != direction)
-        {
-            GPIO_setOutputHighOnPin(GPIO_PORT_P3, GPIO_PIN0);    // YELLOW   IN1
-            GPIO_setOutputLowOnPin(GPIO_PORT_P5, GPIO_PIN6);   // ORANGE   IN2
-            GPIO_setOutputLowOnPin(GPIO_PORT_P5, GPIO_PIN7);    // RED      IN3
-            GPIO_setOutputHighOnPin(GPIO_PORT_P6, GPIO_PIN6);   // BROWN    IN4
-        }
-        pwmConfigR.dutyCycle = internal_speed_R;
-        pwmConfigL.dutyCycle = internal_speed_L;
+        GPIO_setOutputHighOnPin(GPIO_PORT_P3, GPIO_PIN0);    // YELLOW   IN1
+        GPIO_setOutputLowOnPin(GPIO_PORT_P5, GPIO_PIN6);   // ORANGE   IN2
+        GPIO_setOutputLowOnPin(GPIO_PORT_P5, GPIO_PIN7);    // RED      IN3
+        GPIO_setOutputHighOnPin(GPIO_PORT_P6, GPIO_PIN6);   // BROWN    IN4
         break;
 
     case 2:     //reverse
-        if (Direction != direction)
-        {
-            GPIO_setOutputLowOnPin(GPIO_PORT_P3, GPIO_PIN0);    // YELLOW   IN1
-            GPIO_setOutputHighOnPin(GPIO_PORT_P5, GPIO_PIN6);   // ORANGE   IN2
-            GPIO_setOutputHighOnPin(GPIO_PORT_P5, GPIO_PIN7);    // RED      IN3
-            GPIO_setOutputLowOnPin(GPIO_PORT_P6, GPIO_PIN6);   // BROWN    IN4
-        }
-        pwmConfigR.dutyCycle = internal_speed_R;
-        pwmConfigL.dutyCycle = internal_speed_L;
+        GPIO_setOutputLowOnPin(GPIO_PORT_P3, GPIO_PIN0);    // YELLOW   IN1
+        GPIO_setOutputHighOnPin(GPIO_PORT_P5, GPIO_PIN6);   // ORANGE   IN2
+        GPIO_setOutputHighOnPin(GPIO_PORT_P5, GPIO_PIN7);    // RED      IN3
+        GPIO_setOutputLowOnPin(GPIO_PORT_P6, GPIO_PIN6);   // BROWN    IN4
         break;
 
     case 3:     // turn left
-        pwmConfigR.dutyCycle = internal_speed_R;
-        pwmConfigL.dutyCycle = 0000;
-        if (facingDirection-- >= 1)
-            facingDirection--;
-        else
-            facingDirection = 4;
+        GPIO_setOutputHighOnPin(GPIO_PORT_P3, GPIO_PIN0);
+        GPIO_setOutputLowOnPin(GPIO_PORT_P5, GPIO_PIN6);
+        GPIO_setOutputLowOnPin(GPIO_PORT_P5, GPIO_PIN7);
+        GPIO_setOutputLowOnPin(GPIO_PORT_P6, GPIO_PIN6);
         break;
 
     case 4:     //turn right
-        pwmConfigR.dutyCycle = 0000;
-        pwmConfigL.dutyCycle = internal_speed_L;
-        if (facingDirection++ <= 4)
-            facingDirection++;
-        else
-            facingDirection = 1;
+        GPIO_setOutputLowOnPin(GPIO_PORT_P3, GPIO_PIN0);
+        GPIO_setOutputLowOnPin(GPIO_PORT_P5, GPIO_PIN6);
+        GPIO_setOutputLowOnPin(GPIO_PORT_P5, GPIO_PIN7);
+        GPIO_setOutputHighOnPin(GPIO_PORT_P6, GPIO_PIN6);
         break;
 
     default:
@@ -303,28 +265,56 @@ int MOV(int direction, int speed, int duration)
     return 0;
 }
 
+void emergencyStop(void)
+{
+    pwmConfigR.dutyCycle = 0000;
+    pwmConfigL.dutyCycle = 0000;
+    Timer_A_generatePWM(TIMER_A0_BASE, &pwmConfigL);
+    Timer_A_generatePWM(TIMER_A0_BASE, &pwmConfigR);
+    Counter_L_Prev = 0;
+    Counter_L_Sum = 0;
+    Counter_R_Prev = 0;
+    Counter_R_Sum = 0;
+    GPIO_setOutputLowOnPin(GPIO_PORT_P3, GPIO_PIN0);
+    GPIO_setOutputLowOnPin(GPIO_PORT_P5, GPIO_PIN6);
+    GPIO_setOutputLowOnPin(GPIO_PORT_P5, GPIO_PIN7);
+    GPIO_setOutputLowOnPin(GPIO_PORT_P6, GPIO_PIN6);
+    Timer_A_stopTimer(TIMER_A0_BASE);
+    Timer_A_stopTimer(TIMER_A1_BASE);
+}
+
 //TimerA1 handler
 void TA1_0_IRQHandler(void)
 {
-    // CHECK DURATION
-    if (TimerCount < Duration)
+    if (emergencyTrig == 0)
     {
-        TimerCount++;
+        if (TimerCount < Duration)
+        {
+            TimerCount++;
+            if (TimerCount % 20 == 0)
+            {
+                pid();
+            }
+        }
+        else
+        {
+            emergencyStop();
+            Timer_A_clearCaptureCompareInterrupt(TIMER_A1_BASE,
+            TIMER_A_CAPTURECOMPARE_REGISTER_0);
+            Mutex = 1;
+            printf("Mutex released\n");
+            fflush(stdout);
+        }
     }
     else
     {
-        pwmConfigR.dutyCycle = 0000;
-        pwmConfigL.dutyCycle = 0000;
-        Timer_A_generatePWM(TIMER_A0_BASE, &pwmConfigL);
-        Timer_A_generatePWM(TIMER_A0_BASE, &pwmConfigR);
-        Timer_A_stopTimer(TIMER_A1_BASE);
+        emergencyStop();
         Timer_A_clearCaptureCompareInterrupt(TIMER_A1_BASE,
         TIMER_A_CAPTURECOMPARE_REGISTER_0);
-        pwmCompleted = true;
+        Mutex = 1;
+        printf("Mutex released\n");
+        fflush(stdout);
     }
-
-    // CHECK PID
-    pid();
 
     Timer_A_clearCaptureCompareInterrupt(TIMER_A1_BASE,
     TIMER_A_CAPTURECOMPARE_REGISTER_0);
