@@ -5,6 +5,7 @@ from flask import Flask, jsonify, request, session
 
 app = Flask(__name__)
 
+
 # General idea just to bridge ASP & Flask
 # ASP: http get - > req json
 # link the stuff to the thingy.
@@ -51,6 +52,7 @@ def fetchCarInstructions():  # put application's code here
         return row
 
 
+# This is the GET method
 @app.route('/setCommand<string:command>')
 def setCarInstructions(command):
     con = sqlite3.connect('car_details')
@@ -58,6 +60,27 @@ def setCarInstructions(command):
     cur.execute('''UPDATE car SET details = "''' + command + '''" WHERE entry = "command"''')
     con.commit()
     return "Updated: " + command
+
+
+# This is the POST method
+@app.route('/setCarCommand', methods=['POST'])
+def recvFromAsProject():
+    content = request.json
+    con = sqlite3.connect('car_details')
+    cur = con.cursor()
+    cur.execute('''UPDATE car SET details = "''' + str(content['carCommand']) + '''" WHERE entry = "command"''')
+    con.commit()
+    return content
+
+
+@app.route('/setDist<int:dist>Speed<int:speed>')
+def setCarStatistics(dist, speed):
+    con = sqlite3.connect('car_details')
+    cur = con.cursor()
+    cur.execute('''UPDATE car SET details ="''' + str(speed) + '''" WHERE entry = "speed"''')
+    cur.execute('''UPDATE car SET details ="''' + str(dist) + '''" WHERE entry = "distance"''')
+    con.commit()
+    return "Updated speed: " + str(speed) + " distance: " + str(dist)
 
 
 @app.route('/getDistRead')
