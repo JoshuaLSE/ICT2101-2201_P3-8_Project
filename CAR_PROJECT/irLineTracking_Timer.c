@@ -25,7 +25,7 @@ const Timer_A_UpModeConfig upConfig =
 };
 
 
-void irLineTracking_UsingTimer()
+void irLineTracking_UsingTimer(void)
 {
     /* Get Left IRLine input value */
     GPIO_setAsInputPin(GPIO_PORT_P1, GPIO_PIN6);
