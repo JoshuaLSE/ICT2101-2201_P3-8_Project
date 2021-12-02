@@ -36,7 +36,7 @@ const Timer_A_UpModeConfig upConfigBuzzer = {
 };
 
 
-void buzzer()
+void buzzer(void)
 {
     GPIO_setAsPeripheralModuleFunctionOutputPin(GPIO_PORT_P2, GPIO_PIN5,GPIO_PRIMARY_MODULE_FUNCTION);
 
