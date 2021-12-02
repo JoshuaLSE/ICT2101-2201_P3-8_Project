@@ -81,7 +81,7 @@ void TA1_0_IRQHandler(void)
 
     Timer_A_generatePWM(TIMER_A0_BASE, &pwmConfigBuzzer);
 
-    /* Clear Timer Interrupt */
+    /* Clear the capture-compare interrupt flag */
     Timer_A_clearCaptureCompareInterrupt(TIMER_A1_BASE,
     TIMER_A_CAPTURECOMPARE_REGISTER_0);
 }
