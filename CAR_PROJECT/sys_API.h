@@ -1,6 +1,6 @@
 ;
 //PWM methods
-extern void initialisePWM(int facingDirection);
+extern void initialisePWM();
 extern void emergencyStop(void);
 extern int MOV(int direction, int speed, int duration);
 

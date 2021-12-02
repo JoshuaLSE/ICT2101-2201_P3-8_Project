@@ -19,6 +19,8 @@ int Wifi = 1;
 char HTTP_WebPage[] = "192.168.1.5";
 char Port[] = "80";
 char HTTP_Request[] = "GET / \r\n\r\n";
+char AP_Name[] = "networknamehere";
+char AP_Pwd[] = "networkpwd";
 
 uint32_t HTTP_Request_Size = sizeof(HTTP_Request) - 1;
 
@@ -42,19 +44,22 @@ void Delay(uint32_t loop)
         ;
 }
 
+/*
+ * This parses the input into tokens and checks for correct commands
+ * Following which, it will execute them sequentially
+ *
+ */
 void commandHandler(char *a)
 {
     char str[9999] = "";
     const char s[2] = " ";
     char *token;
     char movement[4] = "MOV";
-    char light[4] = "LED";
     char buzzer[4] = "BUZ";
 
     char inputStr[99];
 
     char *movCmd;
-    char *ledCmd;
     char *buzCmd;
 
     strcpy(str, a);
@@ -70,13 +75,10 @@ void commandHandler(char *a)
     {
         strcpy(inputStr, token);
         movCmd = strstr(token, movement);
-        ledCmd = strstr(token, light);
         buzCmd = strstr(token, buzzer);
 
         if (movCmd != NULL)
         {
-            printf("mov received\n");
-            fflush(stdout);
             Mutex = 0;
             int a = atoi(&movCmd[4]), b = atoi(&movCmd[6]), c = atoi(
                     &movCmd[8]);
@@ -85,28 +87,31 @@ void commandHandler(char *a)
             MOV(a, b, c);
             while (Mutex == 0)
             {
-                float a = getHCSR04Distance();
-                printf("Distance: %.3f\n", a);
-                if(a < 5.00){
+                int a = getHCSR04Distance();
+                printf("Dist: %dcm\n", a);
+                fflush(stdout);
+                if (a < 5.00)
+                {
                     emergencyTrig = 1;
                     Mutex = 1;
                 }
             }
-        }
-        else if (ledCmd != NULL)
-        {
-            printf("LED: %s\n", ledCmd);
+            printf("Im free\n");
+            fflush(stdout);
         }
         else if (buzCmd != NULL)
         {
             printf("BUZ: %s\n", buzCmd);
+            fflush(stdout);
         }
-        fflush(stdout);
 
         token = strtok(NULL, s);
     }
 }
 
+/*
+ * Sends a hard reset command to the ESP8266
+ */
 void hardReset()
 {
     ESP8266_HardReset();
@@ -114,6 +119,9 @@ void hardReset()
     UART_Flush(EUSCI_A2_BASE);
 }
 
+/*
+ * Hardware initialisation for the ESP8266
+ */
 void initWifi()
 {
     /*Ensure MSP432 is Running at 24 MHz*/
@@ -144,23 +152,82 @@ void initWifi()
     /*Reset GPIO of the ESP8266*/
     GPIO_setAsOutputPin(GPIO_PORT_P6, GPIO_PIN1);
 
-    /*Set up LED feedback*/
+    /*Set up LED receiving*/
     GPIO_setAsOutputPin(GPIO_PORT_P2, GPIO_PIN0 | GPIO_PIN1 | GPIO_PIN2);
     GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0 | GPIO_PIN1 | GPIO_PIN2);
+
+    /*Set up LED acknowledgement*/
+    GPIO_setAsOutputPin(GPIO_PORT_P1, GPIO_PIN0);
+    GPIO_setOutputLowOnPin(GPIO_PORT_P1, GPIO_PIN0);
 }
+
+/*
+ * Indicates to website that commands have been received and executed
+ * Can be checked on the website using IPaddress/ack
+ */
+int acknowledge()
+{
+    char acknowledge[] = "GET /ack \r\n\r\n";
+    uint32_t HTTP_Request_Size = sizeof(acknowledge) - 1;
+    printf("sending response\n");
+    fflush(stdout);
+
+    hardReset();
+
+    GPIO_setOutputHighOnPin(GPIO_PORT_P1, GPIO_PIN0);
+    if (!ESP8266_ConnectToAP(AP_Name, AP_Pwd))
+    {
+        GPIO_setOutputLowOnPin(GPIO_PORT_P2,
+        GPIO_PIN0 | GPIO_PIN1 | GPIO_PIN2);
+        return 7;
+    }
+
+    if (!ESP8266_EnableMultipleConnections(false))
+    {
+        GPIO_setOutputLowOnPin(GPIO_PORT_P2,
+        GPIO_PIN0 | GPIO_PIN1 | GPIO_PIN2);
+        return 8;
+    }
+
+    if (!ESP8266_EstablishConnection('0', TCP, HTTP_WebPage, Port))
+    {
+        GPIO_setOutputLowOnPin(GPIO_PORT_P2,
+        GPIO_PIN0 | GPIO_PIN1 | GPIO_PIN2);
+        return 9;
+    }
+
+    if (!ESP8266_SendData('0', acknowledge, HTTP_Request_Size))
+    {
+        GPIO_setOutputLowOnPin(GPIO_PORT_P2,
+        GPIO_PIN0 | GPIO_PIN1 | GPIO_PIN2);
+        return 10;
+    }
+    GPIO_setOutputLowOnPin(GPIO_PORT_P1, GPIO_PIN0);
+    return 0;
+}
+
+/*
+ * Sequential series of commands to connect to the WIFI
+ * Stages:
+ * 0) Hard reset to clear previous settings
+ * 1) Check UART connectivity with ESP8266
+ * 2) Connect to Access Point
+ * 3) Enable Mult.Connections to allow for sending & receiving
+ * 4) Establish TCP connection with Server
+ * 5) Send data over
+ *
+ * Uses LED to visually update users
+ */
 
 int runWifi()
 {
-    /*Hard reset & flush to get rid of junk inputs*/
     hardReset();
 
-    /*Pointer to ESP8266 global buffer*/
     char *ESP8266_Data = ESP8266_GetBuffer();
 
     int RGB = 0;
-    P2OUT = RGB; //RED
+    P2OUT = RGB;
 
-    /*Check UART connection to MSP432*/
     if (!ESP8266_CheckConnection())
     {
         GPIO_setOutputLowOnPin(GPIO_PORT_P2,
@@ -169,11 +236,9 @@ int runWifi()
     }
 
     RGB++;
-    P2OUT = RGB; //GREEN
+    P2OUT = RGB;
 
-    Delay(100000);
-    /*Check available Access Points*/
-    if (!ESP8266_AvailableAPs())
+    if (!ESP8266_ConnectToAP(AP_Name, AP_Pwd))
     {
         GPIO_setOutputLowOnPin(GPIO_PORT_P2,
         GPIO_PIN0 | GPIO_PIN1 | GPIO_PIN2);
@@ -181,11 +246,9 @@ int runWifi()
     }
 
     RGB++;
-    P2OUT = RGB; //YELLOW
+    P2OUT = RGB;
 
-    Delay(100000);
-    /*Connect to Access Point if necessary here*/
-    if (!ESP8266_ConnectToAP("networknamehere", "networkpwd"))
+    if (!ESP8266_EnableMultipleConnections(false))
     {
         GPIO_setOutputLowOnPin(GPIO_PORT_P2,
         GPIO_PIN0 | GPIO_PIN1 | GPIO_PIN2);
@@ -193,10 +256,9 @@ int runWifi()
     }
 
     RGB++;
-    P2OUT = RGB; //BLUE
+    P2OUT = RGB;
 
-    Delay(100000);
-    if (!ESP8266_EnableMultipleConnections(false))
+    if (!ESP8266_EstablishConnection('0', TCP, HTTP_WebPage, Port))
     {
         GPIO_setOutputLowOnPin(GPIO_PORT_P2,
         GPIO_PIN0 | GPIO_PIN1 | GPIO_PIN2);
@@ -204,33 +266,19 @@ int runWifi()
     }
 
     RGB++;
-    P2OUT = RGB; //PURPLE
+    P2OUT = RGB;
 
-    Delay(100000);
-    /*Try to establish TCP connection to a HTTP server*/
-    if (!ESP8266_EstablishConnection('0', TCP, HTTP_WebPage, Port))
+    if (!ESP8266_SendData('0', HTTP_Request, HTTP_Request_Size))
     {
         GPIO_setOutputLowOnPin(GPIO_PORT_P2,
         GPIO_PIN0 | GPIO_PIN1 | GPIO_PIN2);
         return 5;
     }
 
-    RGB++;
-    P2OUT = RGB; //TURQUOISE
-
-    Delay(10000);
-    /*Query data to connected HTTP server, in order to do this look for an API and request a key*/
-    if (!ESP8266_SendData('0', HTTP_Request, HTTP_Request_Size))
-    {
-        GPIO_setOutputLowOnPin(GPIO_PORT_P2,
-        GPIO_PIN0 | GPIO_PIN1 | GPIO_PIN2);
-        return 6;
-    }
-
     commandHandler(ESP8266_Data);
-    RGB++;
-    P2OUT = RGB; //WHITE
-
+    printf("Ack: %d\n",acknowledge());
+    fflush(stdout);
+    P2OUT = 0;
     return 0;
 }
 
@@ -238,10 +286,14 @@ void main()
 {
     WDT_A_holdTimer();
 
-    initialisePWM(1);
+    initialisePWM();
     Initialise_USM();
-    int status = 1;
     Interrupt_enableMaster();
+    /*
+     * If status is anything other than 0 (correct code execution)
+     * Terminate and rerun the Wifi module.
+     */
+    int status = 1;
     while (1)
     {
         if (status == 1)

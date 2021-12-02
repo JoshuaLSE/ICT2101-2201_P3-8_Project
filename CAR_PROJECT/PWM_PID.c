@@ -13,7 +13,8 @@
 // |_|   \_/\_/ |_|  |_|   \_/_/ \_\_|_\___/_/ \_\___/____|___|___/
 //
 
-#define PERIOD      1000
+//#define PERIOD      1000
+#define PERIOD      10000
 #define DUTYCYCLE   0000
 
 /*
@@ -30,37 +31,46 @@ int emergencyTrig;
 int Direction;
 int Speed;
 int Duration;
-int facingDirection;
 int TimerCount;
-bool pwmCompleted; //declared as global variable in sys_values.h
-int SPEED[2] = { 800, 880 };
+//int SPEED[2] = { 800, 880 };
+int SPEED[2] = { 8000, 8800 };
 /*
- * Timer_A PWM Configuration Parameter
- * Starting at 0% duty cycle
- * Lower speed will be at 25%
- * Higher speed will be at 50%
+ * Timer_A PWM Configuration Parameters
  */
-Timer_A_PWMConfig pwmConfigL = { TIMER_A_CLOCKSOURCE_ACLK, //REF: SMCLK FREQ is 3MHz 32.768khz
-        TIMER_A_CLOCKSOURCE_DIVIDER_1,   //Used: FREQ is 125kHz
+//Timer_A_PWMConfig pwmConfigL = { TIMER_A_CLOCKSOURCE_ACLK,          //REF: SMCLK FREQ is 24MHz, too high 32.768khz
+//                                 TIMER_A_CLOCKSOURCE_DIVIDER_1,     //Used: FREQ is 125kHz
+//                                 PERIOD,
+//                                 TIMER_A_CAPTURECOMPARE_REGISTER_2, //CCR2
+//                                 TIMER_A_OUTPUTMODE_RESET_SET,
+//                                 DUTYCYCLE };
+//
+//Timer_A_PWMConfig pwmConfigR = { TIMER_A_CLOCKSOURCE_ACLK,
+//                                 TIMER_A_CLOCKSOURCE_DIVIDER_1,
+//                                 PERIOD,
+//                                 TIMER_A_CAPTURECOMPARE_REGISTER_1, //CCR1
+//                                 TIMER_A_OUTPUTMODE_RESET_SET,
+//                                 DUTYCYCLE };
+Timer_A_PWMConfig pwmConfigL = { TIMER_A_CLOCKSOURCE_SMCLK, //REF: SMCLK FREQ is 24MHz, too high 32.768khz
+        TIMER_A_CLOCKSOURCE_DIVIDER_8,     //Used: FREQ is 3MHz
         PERIOD,
         TIMER_A_CAPTURECOMPARE_REGISTER_2, //CCR2
         TIMER_A_OUTPUTMODE_RESET_SET,
         DUTYCYCLE };
 
-Timer_A_PWMConfig pwmConfigR = { TIMER_A_CLOCKSOURCE_ACLK,
-TIMER_A_CLOCKSOURCE_DIVIDER_1,
+Timer_A_PWMConfig pwmConfigR = { TIMER_A_CLOCKSOURCE_SMCLK,
+TIMER_A_CLOCKSOURCE_DIVIDER_8,
                                  PERIOD,
                                  TIMER_A_CAPTURECOMPARE_REGISTER_1, //CCR1
                                  TIMER_A_OUTPUTMODE_RESET_SET,
                                  DUTYCYCLE };
 
 Timer_A_UpModeConfig timerConfig = {
-TIMER_A_CLOCKSOURCE_SMCLK,             // SMCLK Clock Source
-        TIMER_A_CLOCKSOURCE_DIVIDER_24, // SMCLK = 3MHz, therefore /64 = 46.875KHz
-        50000,             // 50000 tick period, limited to 16 bits
-        TIMER_A_TAIE_INTERRUPT_DISABLE,             // Disable Timer interrupt
-        TIMER_A_CCIE_CCR0_INTERRUPT_ENABLE,             // Enable CCR0 interrupt
-        TIMER_A_DO_CLEAR             // Clear value
+TIMER_A_CLOCKSOURCE_SMCLK,         // SMCLK Clock Source, 24Mhz due to CS_setDCO
+        TIMER_A_CLOCKSOURCE_DIVIDER_24, // Ref 1MHz, triggered every 1/20th of a second
+        50000,                          // 50000 tick period, limited to 16 bits
+        TIMER_A_TAIE_INTERRUPT_DISABLE,     // Won't overflow
+        TIMER_A_CCIE_CCR0_INTERRUPT_ENABLE, // Enable CCR0 interrupt
+        TIMER_A_DO_CLEAR                    // Clear value
         };
 
 //  ___ ___ ___
@@ -82,9 +92,11 @@ int Counter_R;
 float Counter_R_Prev;
 float Counter_R_Sum;
 
+/*
+ * Initialise variables and hardware for wheel counters
+ */
 void initialisePIDcounter(void)
 {
-    /*Initiate the Counter*/
     Counter_L = 0;
     Counter_L_Prev = 0;
     Counter_L_Sum = 0;
@@ -93,7 +105,6 @@ void initialisePIDcounter(void)
     Counter_R_Prev = 0;
     Counter_R_Sum = 0;
 
-    /*Enable Counter Interrupt*/
     Interrupt_enableInterrupt(INT_PORT3);
     GPIO_clearInterruptFlag(GPIO_PORT_P3, GPIO_PIN6);
     GPIO_clearInterruptFlag(GPIO_PORT_P3, GPIO_PIN7);
@@ -101,7 +112,9 @@ void initialisePIDcounter(void)
     GPIO_enableInterrupt(GPIO_PORT_P3, GPIO_PIN7);
 }
 
-/* Port 3 ISR - This ISR will increment for both 3.6 & 3.7*/
+/*
+ * Port 3 ISR - This ISR will increment for both 3.6 & 3.7
+ */
 void PORT3_IRQHandler(void)
 {
     uint32_t status = MAP_GPIO_getEnabledInterruptStatus(GPIO_PORT_P3);
@@ -111,11 +124,12 @@ void PORT3_IRQHandler(void)
     if (status & GPIO_PIN7)
         Counter_L++;
 
-    // Clear interrupt!!!
     GPIO_clearInterruptFlag(GPIO_PORT_P3, status);
 }
 
-//PID Method
+/*
+ * PID to correct wheel rotation
+ */
 void pid(void)
 {
     // Store counter locally
@@ -166,15 +180,15 @@ void pid(void)
 // |_|   \_/\_/ |_|  |_|
 //
 
-void initialisePWM(int initialDirection)
+/*
+ * Initialise the PWM variables and hardware
+ */
+void initialisePWM()
 {
     Direction = 1;
     Speed = 0;
     Duration = 0;
-    facingDirection = 0;
     TimerCount = 0;
-    pwmCompleted = false;
-    facingDirection = initialDirection;
 
     initialisePIDcounter();
     /*
@@ -195,51 +209,51 @@ void initialisePWM(int initialDirection)
     GPIO_setAsPeripheralModuleFunctionOutputPin(GPIO_PORT_P2, GPIO_PIN5,
     GPIO_PRIMARY_MODULE_FUNCTION); //enb
 
-    /* Configuring Timer_A0 to have a period of approximately 80ms and an initial duty cycle of 10% of that (1000 ticks)  */
     Timer_A_generatePWM(TIMER_A0_BASE, &pwmConfigL);
     Timer_A_generatePWM(TIMER_A0_BASE, &pwmConfigR);
 
-    /*
-     * Configuring Timer_A1 for Up Mode
-     * Enabling interrupts
-     */
     Timer_A_configureUpMode(TIMER_A1_BASE, &timerConfig);
     Interrupt_enableInterrupt(INT_TA1_0);
     Timer_A_clearTimer(TIMER_A1_BASE);
 }
 
-// API for movement
+/* API for movement
+ * 0) Set pwmCompleted flag
+ * 1) Set speed
+ * 2) Set timer
+ * 3) Set power config
+ * 4) Start timer
+ */
 int MOV(int direction, int speed, int duration)
 {
-    /*
-     * 0) Set pwmCompleted flag
-     * 1) Set speed
-     * 2) Set timer
-     * 3) Set power config
-     * 4) Start timer
-     */
-    // Set up timer duration
+    // Set up emergency stop variable
     emergencyTrig = 0;
+    Direction = direction;
+    // Set up timer duration - Triggered every 1/20th of a sec => Increment it by 20 to match per second
     Duration = duration * 20;
     // Reset TimerCount
     TimerCount = 0;
     pwmConfigR.dutyCycle = SPEED[1];
     pwmConfigL.dutyCycle = SPEED[0];
 
+    /*
+     * Similar output = stop. (Think XOR)
+     * Reverse output = reverse direction
+     */
     switch (direction)
     {
-    case 1:     //forwards
-        GPIO_setOutputHighOnPin(GPIO_PORT_P3, GPIO_PIN0);    // YELLOW   IN1
-        GPIO_setOutputLowOnPin(GPIO_PORT_P5, GPIO_PIN6);   // ORANGE   IN2
+    case 1:     // Forwards
+        GPIO_setOutputHighOnPin(GPIO_PORT_P3, GPIO_PIN0);   // YELLOW   IN1
+        GPIO_setOutputLowOnPin(GPIO_PORT_P5, GPIO_PIN6);    // ORANGE   IN2
         GPIO_setOutputLowOnPin(GPIO_PORT_P5, GPIO_PIN7);    // RED      IN3
         GPIO_setOutputHighOnPin(GPIO_PORT_P6, GPIO_PIN6);   // BROWN    IN4
         break;
 
-    case 2:     //reverse
+    case 2:     // Reverse
         GPIO_setOutputLowOnPin(GPIO_PORT_P3, GPIO_PIN0);    // YELLOW   IN1
         GPIO_setOutputHighOnPin(GPIO_PORT_P5, GPIO_PIN6);   // ORANGE   IN2
-        GPIO_setOutputHighOnPin(GPIO_PORT_P5, GPIO_PIN7);    // RED      IN3
-        GPIO_setOutputLowOnPin(GPIO_PORT_P6, GPIO_PIN6);   // BROWN    IN4
+        GPIO_setOutputHighOnPin(GPIO_PORT_P5, GPIO_PIN7);   // RED      IN3
+        GPIO_setOutputLowOnPin(GPIO_PORT_P6, GPIO_PIN6);    // BROWN    IN4
         break;
 
     case 3:     // turn left
@@ -249,22 +263,24 @@ int MOV(int direction, int speed, int duration)
         GPIO_setOutputLowOnPin(GPIO_PORT_P6, GPIO_PIN6);
         break;
 
-    case 4:     //turn right
+    case 4:     // turn right
         GPIO_setOutputLowOnPin(GPIO_PORT_P3, GPIO_PIN0);
         GPIO_setOutputLowOnPin(GPIO_PORT_P5, GPIO_PIN6);
         GPIO_setOutputLowOnPin(GPIO_PORT_P5, GPIO_PIN7);
         GPIO_setOutputHighOnPin(GPIO_PORT_P6, GPIO_PIN6);
         break;
-
-    default:
-        return 1; //error - direction is invalid
     }
     Timer_A_generatePWM(TIMER_A0_BASE, &pwmConfigL);
     Timer_A_generatePWM(TIMER_A0_BASE, &pwmConfigR);
     Timer_A_startCounter(TIMER_A1_BASE, TIMER_A_UP_MODE);
+    printf("MOV called\n");
+    fflush(stdout);
     return 0;
 }
 
+/*
+ * Reset & Stop
+ */
 void emergencyStop(void)
 {
     pwmConfigR.dutyCycle = 0000;
@@ -291,31 +307,27 @@ void TA1_0_IRQHandler(void)
         if (TimerCount < Duration)
         {
             TimerCount++;
-            if (TimerCount % 20 == 0)
-            {
-                pid();
-            }
+            pid();
         }
         else
         {
             emergencyStop();
+            Mutex = 1; // Release the commandHandler trap
+            printf("Action Completed Mutex Released\n");
+            fflush(stdout);
             Timer_A_clearCaptureCompareInterrupt(TIMER_A1_BASE,
             TIMER_A_CAPTURECOMPARE_REGISTER_0);
-            Mutex = 1;
-            printf("Mutex released\n");
-            fflush(stdout);
         }
     }
     else
     {
         emergencyStop();
+        Mutex = 1; // Release the commandHandler trap
+        printf("Emergency Mutex Released\n");
+        fflush(stdout);
         Timer_A_clearCaptureCompareInterrupt(TIMER_A1_BASE,
         TIMER_A_CAPTURECOMPARE_REGISTER_0);
-        Mutex = 1;
-        printf("Mutex released\n");
-        fflush(stdout);
     }
-
     Timer_A_clearCaptureCompareInterrupt(TIMER_A1_BASE,
     TIMER_A_CAPTURECOMPARE_REGISTER_0);
 }
