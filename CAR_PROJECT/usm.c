@@ -62,7 +62,7 @@ float getHCSR04Distance(void)
 
     /* Calculating distance in cm */
     calculateddistance = (float) pulseduration / 174.0f;
-    return calculateddistance;
+    return (int)calculateddistance;
 }
 
 void TA2_0_IRQHandler(void)

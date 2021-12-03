@@ -1,9 +1,9 @@
 //PWM values
-extern bool pwmCompleted;
 extern int Direction;
 extern int Speed;
-extern int facingDirection;
 extern int emergencyTrig;
+extern int COUNTR;
+extern int COUNTL;
 
 //USM methods
 extern bool usmCompleted;
