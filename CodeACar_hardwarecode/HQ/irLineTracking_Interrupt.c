@@ -3,14 +3,13 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-/*         IR Line Tracking
+/*       IR Line Tracking
  * Left IR Line      Right IR line
  * VCC: 3V3          3V3
  * GND: GND          GND
  * D0: P1.6          P1.7
  *
  */
-
 
 void irLineTracking_UsingInterrupt(void)
 {
