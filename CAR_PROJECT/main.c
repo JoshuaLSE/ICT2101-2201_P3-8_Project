@@ -4,6 +4,7 @@
 #include <wchar.h>
 #include <string.h>
 #include <stdlib.h>
+#include <inttypes.h>
 
 #include <ti/devices/msp432p4xx/driverlib/driverlib.h>
 #include <ESP8266.h>
@@ -15,12 +16,22 @@
 
 int Mutex = 1;
 int Wifi = 1;
+/*Initialise arrays with 0*/
+int counterR[30] = { 0 };
+int counterL[30] = { 0 };
+int ET[30] = { 0 };
+int currentStage = 0;
 
 char HTTP_WebPage[] = "192.168.1.5";
+//    char HTTP_WebPage[] = "172.20.10.6";
 char Port[] = "80";
 char HTTP_Request[] = "GET / \r\n\r\n";
-char AP_Name[] = "networknamehere";
-char AP_Pwd[] = "networkpwd";
+//char HTTP_Request[] = "GET /ackR105L106E0.R0L45E0.R110L111E0.R0L45E0.R100L106E0.R0L43E0.R104L108E0.R114L112E0. \r\n\r\n";
+//    char AP_Name[] = "iPhone";
+//    char AP_Pwd[] = "baesbutt";
+char AP_Name[] = "Magnifique";
+char AP_Pwd[] = "berrypie41";
+char ack[200] = "GET /ack";
 
 uint32_t HTTP_Request_Size = sizeof(HTTP_Request) - 1;
 
@@ -51,6 +62,7 @@ void Delay(uint32_t loop)
  */
 void commandHandler(char *a)
 {
+    currentStage = 0;
     char str[9999] = "";
     const char s[2] = " ";
     char *token;
@@ -67,7 +79,7 @@ void commandHandler(char *a)
     printf("%s\n", str);
     fflush(stdout);
 
-    /* get the first token */
+    /* Command Execution */
     token = strtok(str, s);
 
     /* walk through other tokens */
@@ -98,6 +110,13 @@ void commandHandler(char *a)
             }
             printf("Im free\n");
             fflush(stdout);
+            /*
+             * Record movement details here!
+             */
+            counterR[currentStage] = COUNTR;
+            counterL[currentStage] = COUNTL;
+            ET[currentStage] = emergencyTrig;
+            currentStage++;
         }
         else if (buzCmd != NULL)
         {
@@ -167,39 +186,22 @@ void initWifi()
  */
 int acknowledge()
 {
-    char acknowledge[] = "GET /ack \r\n\r\n";
-    uint32_t HTTP_Request_Size = sizeof(acknowledge) - 1;
-    printf("sending response\n");
+    uint32_t HTTP_Request_Size = strlen(ack);
+    printf("Strlen: %d",HTTP_Request_Size);
     fflush(stdout);
-
-    hardReset();
-
+    char *ESP8266_Data = ESP8266_GetBuffer();
+    UART_Flush(EUSCI_A2_BASE);
     GPIO_setOutputHighOnPin(GPIO_PORT_P1, GPIO_PIN0);
-    if (!ESP8266_ConnectToAP(AP_Name, AP_Pwd))
-    {
-        GPIO_setOutputLowOnPin(GPIO_PORT_P2,
-        GPIO_PIN0 | GPIO_PIN1 | GPIO_PIN2);
-        return 7;
-    }
-
-    if (!ESP8266_EnableMultipleConnections(false))
-    {
-        GPIO_setOutputLowOnPin(GPIO_PORT_P2,
-        GPIO_PIN0 | GPIO_PIN1 | GPIO_PIN2);
-        return 8;
-    }
 
     if (!ESP8266_EstablishConnection('0', TCP, HTTP_WebPage, Port))
     {
-        GPIO_setOutputLowOnPin(GPIO_PORT_P2,
-        GPIO_PIN0 | GPIO_PIN1 | GPIO_PIN2);
+        commandHandler(ESP8266_Data);
         return 9;
     }
 
-    if (!ESP8266_SendData('0', acknowledge, HTTP_Request_Size))
+    if (!ESP8266_SendData('0', ack, HTTP_Request_Size))
     {
-        GPIO_setOutputLowOnPin(GPIO_PORT_P2,
-        GPIO_PIN0 | GPIO_PIN1 | GPIO_PIN2);
+        commandHandler(ESP8266_Data);
         return 10;
     }
     GPIO_setOutputLowOnPin(GPIO_PORT_P1, GPIO_PIN0);
@@ -276,10 +278,48 @@ int runWifi()
     }
 
     commandHandler(ESP8266_Data);
-    printf("Ack: %d\n",acknowledge());
+
+    char reset[] = "GET /ack";
+    strcpy(ack, reset);
+
+    char str[30] = "";
+    char end[13] = " \r\n\r\n";
+
+    // append ch to str
+    int i;
+    for (i = 0; i < currentStage; i++)
+    {
+        sprintf(str, "R%dL%dE%d.", counterR[i], counterL[i], ET[i]);
+        strncat(ack, str, 30);
+    }
+
+    strncat(ack, end, 13);
+    printf("%s\n", ack);
+    printf("Ack status: %d\n", acknowledge());
     fflush(stdout);
+
     P2OUT = 0;
     return 0;
+}
+
+void test()
+{
+    initWifi();
+    commandHandler("MOV[1:1:3] MOV[4:1:2] MOV[3:1:2] MOV[1:1:3]");
+
+    char str[11] = "";
+    char end[13] = " \\r\\n\\r\\n";
+
+    // append ch to str
+    int i;
+    for (i = 0; i < currentStage; i++)
+    {
+        sprintf(str, "R%dL%dE%d,", counterR[i], counterL[i], ET[i]);
+        strncat(ack, str, 11);
+    }
+
+    strncat(ack, end, 13);
+    printf("%s\n", ack);
 }
 
 void main()
@@ -289,10 +329,17 @@ void main()
     initialisePWM();
     Initialise_USM();
     Interrupt_enableMaster();
+//    printf("Size of %d Size of %d\n", strlen(HTTP_Request),sizeof(HTTP_Request));
+//    fflush(stdout);
     /*
      * If status is anything other than 0 (correct code execution)
      * Terminate and rerun the Wifi module.
      */
+//    test();
+//    while(1)
+//    {
+//
+//    }
     int status = 1;
     while (1)
     {

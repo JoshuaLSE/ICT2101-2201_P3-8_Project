@@ -13,7 +13,6 @@
 // |_|   \_/\_/ |_|  |_|   \_/_/ \_\_|_\___/_/ \_\___/____|___|___/
 //
 
-//#define PERIOD      1000
 #define PERIOD      10000
 #define DUTYCYCLE   0000
 
@@ -23,8 +22,8 @@
  * Duration:    5 to 10 seconds
  */
 
-int COUNTR;
-int COUNTL;
+int COUNTR = 0;
+int COUNTL = 0;
 
 int emergencyTrig;
 
@@ -32,24 +31,11 @@ int Direction;
 int Speed;
 int Duration;
 int TimerCount;
-//int SPEED[2] = { 800, 880 };
-int SPEED[2] = { 8000, 8800 };
+
+int SPEED[2] = { 5000, 5500 };
 /*
  * Timer_A PWM Configuration Parameters
  */
-//Timer_A_PWMConfig pwmConfigL = { TIMER_A_CLOCKSOURCE_ACLK,          //REF: SMCLK FREQ is 24MHz, too high 32.768khz
-//                                 TIMER_A_CLOCKSOURCE_DIVIDER_1,     //Used: FREQ is 125kHz
-//                                 PERIOD,
-//                                 TIMER_A_CAPTURECOMPARE_REGISTER_2, //CCR2
-//                                 TIMER_A_OUTPUTMODE_RESET_SET,
-//                                 DUTYCYCLE };
-//
-//Timer_A_PWMConfig pwmConfigR = { TIMER_A_CLOCKSOURCE_ACLK,
-//                                 TIMER_A_CLOCKSOURCE_DIVIDER_1,
-//                                 PERIOD,
-//                                 TIMER_A_CAPTURECOMPARE_REGISTER_1, //CCR1
-//                                 TIMER_A_OUTPUTMODE_RESET_SET,
-//                                 DUTYCYCLE };
 Timer_A_PWMConfig pwmConfigL = { TIMER_A_CLOCKSOURCE_SMCLK, //REF: SMCLK FREQ is 24MHz, too high 32.768khz
         TIMER_A_CLOCKSOURCE_DIVIDER_8,     //Used: FREQ is 3MHz
         PERIOD,
@@ -120,9 +106,15 @@ void PORT3_IRQHandler(void)
     uint32_t status = MAP_GPIO_getEnabledInterruptStatus(GPIO_PORT_P3);
 
     if (status & GPIO_PIN6)
+    {
         Counter_R++;
+        COUNTR++;
+    }
     if (status & GPIO_PIN7)
+    {
         Counter_L++;
+        COUNTL++;
+    }
 
     GPIO_clearInterruptFlag(GPIO_PORT_P3, status);
 }
@@ -226,6 +218,9 @@ void initialisePWM()
  */
 int MOV(int direction, int speed, int duration)
 {
+    // Reset the Count
+    COUNTR = 0;
+    COUNTL = 0;
     // Set up emergency stop variable
     emergencyTrig = 0;
     Direction = direction;

@@ -121,7 +121,7 @@ bool ESP8266_ConnectToAP(char *SSID, char *Password)
     UART_Printf(EUSCI_A2_BASE, "%s=\"%s\",\"%s\"\r\n", AT_CWJAP, SSID,
                 Password);
 
-    __delay_cycles(24000000);
+    __delay_cycles(48000000);
 
     if (!ESP8266_WaitForAnswer(ESP8266_RECEIVE_TRIES))
     {
@@ -152,7 +152,7 @@ bool ESP8266_EnableMultipleConnections(bool Enable)
 
     UART_Printf(EUSCI_A2_BASE, "%s=%c\r\n", AT_CIPMUX, c);
 
-    __delay_cycles(12000000);
+    __delay_cycles(48000000);
     if (!ESP8266_WaitForAnswer(ESP8266_RECEIVE_TRIES))
     {
         return false;
@@ -190,7 +190,7 @@ bool ESP8266_EstablishConnection(char ID, uint8_t type, char *address,
     UART_Printf(EUSCI_A2_BASE, "%s=\"%s\",\"%s\",%s\r\n", AT_CIPSTART, ct,
                 address, port); //"AT+CIPSTART=\"TCP\",\"api.thingspeak.com\",80\r\n"); //"%s=%c,\"%s\",\"%s\",%s\r\n", AT_CIPSTART, ID, ct, address, port);
 
-    __delay_cycles(24000000);
+    __delay_cycles(48000000);
 
     if (!ESP8266_WaitForAnswer(ESP8266_RECEIVE_TRIES))
     {
