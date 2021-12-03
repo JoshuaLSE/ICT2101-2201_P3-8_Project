@@ -1,3 +1,4 @@
+import json
 import secrets
 import sqlite3
 
@@ -27,11 +28,11 @@ def create_database():
 def generate_database():
     con = sqlite3.connect('car_details')
     cur = con.cursor()
-    cur.execute('''INSERT INTO car(entry,details)VALUES ('command','MOV[2:1:5] MOV[2:1:5] MOV[4:1:2] MOV[3:1:2]')''')
+    cur.execute(
+        '''INSERT INTO car(entry,details)VALUES ('command','MOV[1:1:3] MOV[4:1:3] MOV[3:1:3] MOV[1:1:3]')''')
     con.commit()
     print("Commands inserted")
-    cur.execute('''INSERT INTO car(entry,details)VALUES ('speed','1')''')
-    cur.execute('''INSERT INTO car(entry,details)VALUES ('distance','1')''')
+    cur.execute('''INSERT INTO car(entry,details)VALUES ('stat','noneyet')''')
     con.commit()
     cur.execute('''SELECT * FROM car''')
     results = cur.fetchall()
@@ -50,6 +51,17 @@ def fetchCarInstructions():  # put application's code here
     cur.execute('''SELECT details FROM car WHERE entry = "command"''')
     for row in cur.fetchone():
         return row
+
+
+@app.route('/ack<string:data>')
+def carAcknowledgement(data):  # put application's code here
+    con = sqlite3.connect('car_details')
+    cur = con.cursor()
+    cur.execute('''UPDATE car SET details = "acknowledged" WHERE entry = "command"''')
+    con.commit()
+    cur.execute('''UPDATE car SET details = "''' + data + '''" WHERE entry = "stat"''')
+    con.commit()
+    return "OK"
 
 
 # This is the GET method
@@ -73,31 +85,28 @@ def recvFromAsProject():
     return content
 
 
-@app.route('/setDist<int:dist>Speed<int:speed>')
-def setCarStatistics(dist, speed):
-    con = sqlite3.connect('car_details')
-    cur = con.cursor()
-    cur.execute('''UPDATE car SET details ="''' + str(speed) + '''" WHERE entry = "speed"''')
-    cur.execute('''UPDATE car SET details ="''' + str(dist) + '''" WHERE entry = "distance"''')
-    con.commit()
-    return "Updated speed: " + str(speed) + " distance: " + str(dist)
-
-
 @app.route('/getDistRead')
 def fetchCarStatistics():
     con = sqlite3.connect('car_details')
     cur = con.cursor()
-    status = []
-    cur.execute('''SELECT details FROM car WHERE entry = "speed"''')
+    status = ""
+    cur.execute('''SELECT details FROM car WHERE entry = "stat"''')
     for row in cur.fetchone():
-        status.append(row)
-    cur.execute('''SELECT details FROM car WHERE entry = "distance"''')
-    for row in cur.fetchone():
-        status.append(row)
-    return jsonify({'speed': status[0], 'distance': status[1]})
+        status = row
+    x = json.loads('[]')
+    for status in status.split("."):
+        if status != '':
+            r_loc = status.find("R")
+            l_loc = status.find("L")
+            e_loc = status.find("E")
+            y = {"Right speed": str(status[r_loc + 1:l_loc]),
+                 "Left speed": str(status[l_loc + 1:e_loc]),
+                 "Emergency Break": str(status[e_loc + 1:])}
+            x.append(y)
+    return jsonify(x)
 
 
 if __name__ == '__main__':
-    # app.run(host='192.168.1.5', port=80, debug=True, threaded=True)
+    app.run(host='192.168.1.5', port=80, debug=True, threaded=True)
     # app.run(host='172.20.10.6', port=80, debug=True, threaded=True)
-    app.run(host='localhost', port=80, debug=True, threaded=True)
+    # app.run(host='localhost', port=80, debug=True, threaded=True)
