@@ -16,8 +16,8 @@
 /* Timer_A UpMode Configuration Parameter */
 const Timer_A_UpModeConfig upConfig =
 {
-        TIMER_A_CLOCKSOURCE_SMCLK,               // SMCLK Clock Source
-        TIMER_A_CLOCKSOURCE_DIVIDER_64,          // SMCLK/1 = 3MHz
+        TIMER_A_CLOCKSOURCE_SMCLK,               // SMCLK Clock Source = 3MHz
+        TIMER_A_CLOCKSOURCE_DIVIDER_64,          // SMCLK/64
         TIMER_PERIOD,                            // 5000 tick period
         TIMER_A_TAIE_INTERRUPT_DISABLE,          // Disable Timer interrupt
         TIMER_A_CCIE_CCR0_INTERRUPT_ENABLE ,     // Enable CCR0 interrupt
