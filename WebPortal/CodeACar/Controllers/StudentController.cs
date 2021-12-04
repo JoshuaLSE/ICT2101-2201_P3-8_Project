@@ -92,7 +92,7 @@ namespace CodeACar.Controllers
                     newChallengeHistory.ChallengeId = challenge.ChallengeId;
                     newChallengeHistory.Command = challengeHistoryInfo.Command;
                     newChallengeHistory.UserId = studentId;
-                    newChallengeHistory.IsCompleted = challengeHistoryInfo.Command == challenge.Solution; //Check if command matches solution and assign isCompleted accordingly
+                    newChallengeHistory.IsCompleted = challengeHistoryInfo.Command.TrimEnd() == challenge.Solution; //Check if command matches solution and assign isCompleted accordingly
 
                     // Add Challenge History into Database
                     _context.ChallengeHistories.Add(newChallengeHistory);
