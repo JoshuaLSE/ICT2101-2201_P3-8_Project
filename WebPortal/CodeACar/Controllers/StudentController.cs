@@ -26,6 +26,7 @@ namespace CodeACar.Controllers
 
         public IActionResult Index()
         {
+            var studentId = int.Parse(HttpContext.Request.Cookies["studentId"].ToString());
             var role = HttpContext.Request.Cookies["role"].ToString();
 
             if (string.IsNullOrEmpty(role) || role != "Student")
@@ -37,6 +38,7 @@ namespace CodeACar.Controllers
                 ViewData["role"] = role.ToString();
                 var challenges = _context.Challenges.ToList();
                 ViewData["Challenges"] = challenges;
+                ViewData["Histories"] = _context.ChallengeHistories.Where(c => c.UserId == studentId).ToList();
                 return View("Index");
             }
         }
