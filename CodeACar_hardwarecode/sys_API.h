@@ -1,5 +1,3 @@
-;
-
 //PWM methods
 extern void initialisePWM();
 extern void emergencyStop(void);
@@ -34,3 +32,7 @@ extern void onWhiteLED_Blink(void);
 
 //Buzzer methods
 extern void buzzer(void);
+
+//IR Sensor methods
+extern void irLineTracking_UsingTimer(void);
+extern void boundsCheck(void);

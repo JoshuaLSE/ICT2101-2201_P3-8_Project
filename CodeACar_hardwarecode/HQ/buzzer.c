@@ -9,7 +9,7 @@
  * Pin: P2.5   (TA0.2) PWM out
  * Pin: GND
  */
-
+int buzzer_set = 0;
 #define PERIOD 10000
 #define DUTYCYCLE 0
 
@@ -57,7 +57,7 @@ void buzzer(void)
 //    Interrupt_enableSleepOnIsrExit();
 //    Interrupt_enableInterrupt(INT_TA1_0);
 //    Timer_A_startCounter(TIMER_A1_BASE, TIMER_A_UP_MODE);
-
+    buzzer_set = 1; //Joshua: To let TA interrupt handle it
     pwmConfigBuzzer.dutyCycle = 0;    // Joshua: Reset to 0 each time.
     GPIO_setAsPeripheralModuleFunctionOutputPin(GPIO_PORT_P2, GPIO_PIN7,
     GPIO_PRIMARY_MODULE_FUNCTION);    // Joshua: Set to P2.7 instead, using CCR4
@@ -76,19 +76,23 @@ void TA3_0_IRQHandler(void)
     /* If duty cycle is greater than period then stop sound */
     if (pwmConfigBuzzer.dutyCycle > PERIOD)
     {
-        Timer_A_stopTimer(TIMER_A0_BASE); // stop PWMConfig
-        Timer_A_stopTimer(TIMER_A3_BASE); // stop Timer
-        Mutex = 1;
-        printf("Buzzer Mutex\n");
-        fflush(stdout);
+        if (buzzer_set == 1)
+        {
+            Timer_A_stopTimer(TIMER_A0_BASE); // stop PWMConfig
+            //        Timer_A_stopTimer(TIMER_A3_BASE); // stop Timer
+            buzzer_set = 0;
+            Mutex = 1;
+            //        printf("Buzzer Mutex\n");
+            //        fflush(stdout);
+        }
     }
     else
+    {
         pwmConfigBuzzer.dutyCycle += 1500; // Increase by 1500 each time
-    printf("Buzzer.dutyCycle: %d\n", pwmConfigBuzzer.dutyCycle);
-    fflush(stdout);
+        Timer_A_generatePWM(TIMER_A0_BASE, &pwmConfigBuzzer);
+    }
 
-    Timer_A_generatePWM(TIMER_A0_BASE, &pwmConfigBuzzer);
-
+    boundsCheck();
     /* Clear the capture-compare interrupt flag */
     Timer_A_clearCaptureCompareInterrupt(TIMER_A3_BASE,
     TIMER_A_CAPTURECOMPARE_REGISTER_0);
