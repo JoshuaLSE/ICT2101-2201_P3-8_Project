@@ -67,7 +67,7 @@ void commandHandler(char *a)
     const char s[2] = " ";
     char *token;
     char movement[4] = "MOV";
-    char buzzer[4] = "BUZ";
+    char buzz[4] = "BUZ";
 
     char inputStr[99];
 
@@ -87,10 +87,16 @@ void commandHandler(char *a)
     {
         strcpy(inputStr, token);
         movCmd = strstr(token, movement);
-        buzCmd = strstr(token, buzzer);
+        buzCmd = strstr(token, buzz);
 
         if (movCmd != NULL)
         {
+            Mutex = 0;
+            buzzer();               // TRYING BUZZER HERE
+            while (Mutex == 0)
+            {
+
+            }
             Mutex = 0;
             int a = atoi(&movCmd[4]), b = atoi(&movCmd[6]), c = atoi(
                     &movCmd[8]);
@@ -187,7 +193,7 @@ void initWifi()
 int acknowledge()
 {
     uint32_t HTTP_Request_Size = strlen(ack);
-    printf("Strlen: %d",HTTP_Request_Size);
+    printf("Strlen: %d", HTTP_Request_Size);
     fflush(stdout);
     char *ESP8266_Data = ESP8266_GetBuffer();
     UART_Flush(EUSCI_A2_BASE);
@@ -227,9 +233,6 @@ int runWifi()
 
     char *ESP8266_Data = ESP8266_GetBuffer();
 
-    int RGB = 0;
-    P2OUT = RGB;
-
     if (!ESP8266_CheckConnection())
     {
         GPIO_setOutputLowOnPin(GPIO_PORT_P2,
@@ -237,8 +240,8 @@ int runWifi()
         return 1;
     }
 
-    RGB++;
-    P2OUT = RGB;
+    clearBits();
+    onRedLED();
 
     if (!ESP8266_ConnectToAP(AP_Name, AP_Pwd))
     {
@@ -247,8 +250,8 @@ int runWifi()
         return 2;
     }
 
-    RGB++;
-    P2OUT = RGB;
+    clearBits();
+    onGreenLED();
 
     if (!ESP8266_EnableMultipleConnections(false))
     {
@@ -257,8 +260,8 @@ int runWifi()
         return 3;
     }
 
-    RGB++;
-    P2OUT = RGB;
+    clearBits();
+    onYellowLED();
 
     if (!ESP8266_EstablishConnection('0', TCP, HTTP_WebPage, Port))
     {
@@ -267,8 +270,8 @@ int runWifi()
         return 4;
     }
 
-    RGB++;
-    P2OUT = RGB;
+    clearBits();
+    onBlueLED();
 
     if (!ESP8266_SendData('0', HTTP_Request, HTTP_Request_Size))
     {
@@ -298,7 +301,7 @@ int runWifi()
     printf("Ack status: %d\n", acknowledge());
     fflush(stdout);
 
-    P2OUT = 0;
+    clearBits();
     return 0;
 }
 
@@ -329,6 +332,12 @@ void main()
     initialisePWM();
     Initialise_USM();
     Interrupt_enableMaster();
+//    initWifi();
+//    buzzer();
+//    while (1)
+//    {
+//
+//    }
 //    printf("Size of %d Size of %d\n", strlen(HTTP_Request),sizeof(HTTP_Request));
 //    fflush(stdout);
     /*
