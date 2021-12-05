@@ -4,7 +4,10 @@
 ### IDE
 * We recommend using Visual Studio Community 2019 or newer to run this project. You may get the latest Visual Studio IDE [here](https://visualstudio.microsoft.com/downloads/)
 * As the project is coded using the ASP .NET MVC Framework, you will need to check the `ASP.NET and web development` workload as shown in the image below
+
 <img src="https://res.cloudinary.com/dkhzest5h/image/upload/v1638710323/02_ASP.Net_and_web_development_eooshu.png" alt="option"/>
+
+* You will also need a Python IDE, preferably Pycharm to run our flask API. You may get the latest version of Pycharm Community [here](https://www.jetbrains.com/pycharm/download/#section=windows)
 
 ### Additional Dependencies
 * The project has been coded using the .NET Core 3.1. As such you will need to install the SDK and its Runtime Installer to smoothly run our project. You may get the latest SDK [here](https://dotnet.microsoft.com/download/dotnet/thank-you/sdk-3.1.415-windows-x64-installer) and the runtime [here](https://dotnet.microsoft.com/download/dotnet/thank-you/runtime-aspnetcore-3.1.21-windows-x64-installer).
@@ -20,7 +23,16 @@
 1. Open our project solution in Visual Studio
 2. Right-click the Project's `Solution 'CodeACar'` & Click `Build`
 3. Once the IDE has finished building the project, click `Run` or the play icon to launch the web portal.
+
 <img src="https://res.cloudinary.com/dkhzest5h/image/upload/v1638714739/Screenshot_2021-12-05_222613_w87tx6.png" alt="option"/>
+
+4. To run the Flask API, the `app.py` file in PyCharm
+5. Edit the `host='ip address here'`, at line 120 to a locally assigned ip address, or localhost (127.0.0.1) as shown in the image below.
+ 
+ <img src="https://res.cloudinary.com/dkhzest5h/image/upload/v1638721165/flask_djoeqf.png" alt="option"/>
+
+6. Right-click `app.py` and select `Run Flask (app.py)`
+7. The Flask website is now accessible via any browser, using the ip address specified in step 4.
 
 # Development Workflow
 
