@@ -5,6 +5,16 @@
     var returnUrl = $"/{role}/Manage{titlePlaceholder}s";
     ViewData["Title"] = $"Update New {titlePlaceholder}";
 }
+<div class="status-message-box" id="updating-user">
+    <p class="status-message"><i class="fas fa-sync-alt fa-spin"></i> Updating User</p>
+</div>
+<div class="status-message-box" id="update-user-success">
+    <p class="status-message"><i class="far fa-check-circle text-success"></i><br />User Updated!</p>
+</div>
+<div class="status-message-box" id="update-user-failed">
+    <p class="status-message"><i class="fas fa-exclamation-circle text-danger"></i><br />User Update Failed!</p>
+</div>
+</div>
 <div class="row">
     <div class="col-md-3">
         <a asp-action="Index" asp-controller="Home" id="btnBack" class="btn btn-success btn-block"><i class="fas fa-sign-out-alt"></i> Back</a>
@@ -59,9 +69,15 @@
         $('#errorMsgAlert').text('');
 
         $("#btnSubmit").click(function (e) {
+            $('#updating-user').show();
             e.preventDefault();
             if ($('#tbPassword').val() != '') {
                 submitForm();
+            }
+            else {
+                $('#updating-user').hide();
+                $('#update-user-failed').show();
+                setTimeout(function(){$('#update-user-failed').hide();}, 3000);
             }
         });
 
@@ -87,14 +103,24 @@
                 data: webFormDataInString,
                 success: function (response) {
                     if (response["statusCode"] == 404) {
+                        $('#updating-user').hide();
+                        $('#update-user-failed').show();
+                        setTimeout(function(){$('#update-user-failed').hide();}, 3000);
                         $('#errorMsgAlertBox').removeClass('d-none');
                         $("#errorMsgAlert").text(response["message"]);
                     }
                     else {
-                        location.replace('@returnUrl');
+                        $('#updating-user').hide();
+                        $('#update-user-success').show();
+                        setTimeout(function(){location.replace('@returnUrl');}, 3000);
                     }
                 },
-                error: function (error) { console.log(error); }
+                error: function (error) {
+                    console.log(error);
+                    $('#updating-user').hide();
+                    $('#update-user-failed').show();
+                    setTimeout(function(){$('#update-user-failed').hide();}, 3000);
+                }
             });
         }
     });</script>

@@ -4,6 +4,15 @@
     var returnUrl = $"/{role}/Manage{titlePlaceholder}s";
     ViewData["Title"] = $"Create New {titlePlaceholder}";
 }
+<div class="status-message-box" id="creating-user">
+    <p class="status-message"><i class='fa fa-spinner fa-pulse'></i> Creating</p>
+</div>
+<div class="status-message-box" id="create-user-success">
+    <p class="status-message"><i class="fas fa-check-circle text-success"></i><br />User Created!</p>
+</div>
+<div class="status-message-box" id="create-user-failed">
+    <p class="status-message"><i class="fas fa-exclamation-triangle text-danger"></i><br />User Creation Failed!</p>
+</div>
 <div class="row">
     <div class="col-md-3">
         <a asp-action="Index" asp-controller="Home" id="btnBack" class="btn btn-success btn-block"><i class="fas fa-sign-out-alt"></i> Back</a>
@@ -58,9 +67,15 @@
         $('#errorMsgAlert').text('');
 
         $("#btnSubmit").click(function (e) {
+            $('#creating-user').show();
             e.preventDefault();
             if ($('#tbPassword').val() != '') {
                 submitForm();
+            }
+            else {
+                $('#creating-user').hide();
+                $('#create-user-failed').show();
+                setTimeout(function(){$('#create-user-failed').hide();}, 3000);
             }
         });
 
@@ -86,14 +101,23 @@
                 data: webFormDataInString,
                 success: function (response) {
                     if (response["statusCode"] == 404) {
+                        $('#creating-user').hide();
+                        $('#create-user-failed').show();
+                        setTimeout(function(){$('#create-user-failed').hide();}, 3000);
                         $('#errorMsgAlertBox').removeClass('d-none');
                         $("#errorMsgAlert").text(response["message"]);
                     }
                     else {
-                        location.replace('@returnUrl');
+                        $('#creating-user').hide();
+                        $('#create-user-success').show();
+                        setTimeout(function(){location.replace('@returnUrl');}, 3000);
                     }
                 },
-                error: function (error) { console.log(error); }
+                error: function (error) {
+                    console.log(error);
+                    $('#creating-user').hide();
+                    $('#create-user-failed').show();
+                    setTimeout(function(){$('#create-user-failed').hide();}, 3000);}
             });
         }
     });</script>
