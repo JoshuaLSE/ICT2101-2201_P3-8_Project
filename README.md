@@ -74,8 +74,9 @@ Our team will be testing the `ChallengeController` class using Visual Studio's i
 [![UAT Demo](https://img.youtube.com/vi/17SpftDQOKM/maxresdefault.jpg)](https://www.youtube.com/watch?v=17SpftDQOKM)
 
 ### Unit Test Statistics
-The table below shows the coverage report of the Challenge Controller class. Please refer to the test cases [here - need to link to another md to paste all the test cases]().
--- INSERT COVERAGE TABLE HERE --
+The table below shows the coverage report of the Challenge Controller class.
+
+<img src="https://res.cloudinary.com/dkhzest5h/image/upload/v1638730309/test_table_zfaknc.png" alt="option"/>
 
 ### Control Flow Graph
 This is the Control Flow Graph for our Challenge Controller Class:
