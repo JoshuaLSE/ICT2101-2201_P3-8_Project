@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using CodeACar.Models;
+using CodeACar.Models.WebFormData;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -26,6 +27,7 @@ namespace CodeACar.Controllers
 
         public IActionResult Index()
         {
+            var studentId = int.Parse(HttpContext.Request.Cookies["studentId"].ToString());
             var role = HttpContext.Request.Cookies["role"].ToString();
 
             if (string.IsNullOrEmpty(role) || role != "Student")
@@ -37,6 +39,7 @@ namespace CodeACar.Controllers
                 ViewData["role"] = role.ToString();
                 var challenges = _context.Challenges.ToList();
                 ViewData["Challenges"] = challenges;
+                ViewData["Histories"] = _context.ChallengeHistories.Where(c => c.UserId == studentId).ToList();
                 return View("Index");
             }
         }
@@ -92,21 +95,21 @@ namespace CodeACar.Controllers
                     newChallengeHistory.ChallengeId = challenge.ChallengeId;
                     newChallengeHistory.Command = challengeHistoryInfo.Command;
                     newChallengeHistory.UserId = studentId;
-                    newChallengeHistory.IsCompleted = challengeHistoryInfo.Command.TrimEnd() == challenge.Solution; //Check if command matches solution and assign isCompleted accordingly
+                    newChallengeHistory.IsCompleted = challengeHistoryInfo.Command.TrimEnd() == challenge.Solution;// Assign whether student's solution match the challenge's solution to IsCompleted
 
                     // Add Challenge History into Database
                     _context.ChallengeHistories.Add(newChallengeHistory);
                     _context.SaveChanges();
 
                     // Once the challenge history has been added into the database, send the car command to flask server
-                    string flaskServerApiUrl = "http://127.0.0.1:80/sendCarCommand";
+                    string flaskServerApiUrl = "http://192.168.1.5/sendCarCommand";
                     var httpWebRequest = (HttpWebRequest)WebRequest.Create(flaskServerApiUrl);
                     httpWebRequest.ContentType = "application/json";
                     httpWebRequest.Method = "POST";
 
                     using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
                     {
-                        json = "{\"carCommand\":\""+ newChallengeHistory.Command +"\"}";
+                        json = "{\"carCommand\":\""+ newChallengeHistory.Command +"\", \"challengeHistoryId\":\"" + newChallengeHistory.ChallengeHistoryId + "\"}";
 
                         streamWriter.Write(json);
                     }
@@ -120,8 +123,39 @@ namespace CodeACar.Controllers
              }
             catch (Exception ex)
             {
-                var errorResponseObj = new { message = "Something went wrong when sending the commands to the car! Please contact the system administrator." };
+                var errorResponseObj = new { message = "Something went wrong when sending the commands to the car! Please contact an system administrator." };
                 return BadRequest(errorResponseObj);
+            }
+        }
+
+        [HttpPost]
+        [Route("/Student/UpdateCarStatistic")]
+        public async Task<IActionResult> UpdateCarStatistic()
+        {
+            try
+            {
+                using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
+                {
+                    string json = await reader.ReadToEndAsync();
+                    var statistic = JsonConvert.DeserializeObject<CarStatisticJson>(json);
+
+                    ChallengeHistory currentHistory = _context.ChallengeHistories.FirstOrDefault(h => h.ChallengeHistoryId == statistic.ChallengeHistoryId);
+
+                    if (currentHistory == null)
+                    {
+                        return BadRequest();
+                    }
+
+                    currentHistory.Statistics = json;
+                    _context.ChallengeHistories.Update(currentHistory);
+                    _context.SaveChanges();
+
+                    return Ok();
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.StackTrace);
             }
         }
     }
