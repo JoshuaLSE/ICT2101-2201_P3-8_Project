@@ -10,4 +10,7 @@ extern bool usmCompleted;
 extern initialiseUART();
 
 //Mutex
-extern int Mutex
+extern int Mutex;
+
+//Buzzer
+extern int buzzer_set;
