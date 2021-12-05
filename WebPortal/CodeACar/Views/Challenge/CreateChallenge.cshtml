@@ -1,6 +1,15 @@
 ﻿@{
     ViewData["Title"] = "Create New Challenge";
 }
+<div class="status-message-box" id="creating">
+    <p class="status-message"><i class='fa fa-spinner fa-pulse'></i> Creating</p>
+</div>
+<div class="status-message-box" id="create-success">
+    <p class="status-message"><i class="fas fa-check-double text-success"></i><br />Challenge Created!</p>
+</div>
+<div class="status-message-box" id="create-failed">
+    <p class="status-message"><i class="fas fa-exclamation-triangle text-danger"></i><br />Challenge Creation Failed!</p>
+</div>
 <div class="row">
     <div class="col-md-3">
         <a asp-action="Index" asp-controller="Challenge" id="btnBack" class="btn btn-success btn-block"><i class="fas fa-sign-out-alt"></i> Back</a>
@@ -58,6 +67,7 @@
         });
 
         $("#btnSubmit").click(function () {
+            $('#creating').show();
             uploadToCloudinaryAndSubmit();
         });
 
@@ -81,9 +91,16 @@
                 contentType: "application/json",
                 data: webFormDataInString,
                 success: function (response) {
-                    location.replace('/Challenge/Index');
+                    $('#creating').hide();
+                    $('#create-success').show();
+                    setTimeout(function () { location.replace('/Challenge/Index'); }, 3000);
                 },
-                error: function (error) { console.log(error); }
+                error: function (error) {
+                    console.log(error);
+                    $('#creating').hide();
+                    $('#create-failed').show();
+                    setTimeout(function () { $('#create-failed').hide(); }, 3000);
+                }
             });
         }
 
@@ -105,6 +122,9 @@
                 },
                 error: function (error) {
                     console.log(error);
+                    $('#creating').hide();
+                    $('#create-failed').show();
+                    setTimeout(function () { $('#create-failed').hide(); }, 3000);
                 },
             });
         }

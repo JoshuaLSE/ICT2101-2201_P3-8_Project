@@ -41,8 +41,8 @@ namespace CodeACarUnitTest
                     context.Users.Add(new User
                     {
                         Id = 2,
-                        FullName = "Instructor 1",
-                        Username = "instructor1",
+                        FullName = "Teacher 1",
+                        Username = "teacher1",
                         PasswordHash = BCrypt.Net.BCrypt.HashPassword("P@ssw0rd123"),
                         Role = "Teacher",
                     });
@@ -50,8 +50,8 @@ namespace CodeACarUnitTest
                     context.Users.Add(new User
                     {
                         Id = 3,
-                        FullName = "John Doe",
-                        Username = "200123456",
+                        FullName = "Alam Test",
+                        Username = "2001776",
                         PasswordHash = BCrypt.Net.BCrypt.HashPassword("P@ssw0rd123"),
                         Role = "Student",
                     });
@@ -114,8 +114,8 @@ namespace CodeACarUnitTest
                     context.Users.Add(new User
                     {
                         Id = 2,
-                        FullName = "Instructor 1",
-                        Username = "instructor1",
+                        FullName = "Teacher 1",
+                        Username = "teacher1",
                         PasswordHash = BCrypt.Net.BCrypt.HashPassword("P@ssw0rd123"),
                         Role = "Teacher",
                     });
@@ -123,8 +123,8 @@ namespace CodeACarUnitTest
                     context.Users.Add(new User
                     {
                         Id = 3,
-                        FullName = "John Doe",
-                        Username = "200123456",
+                        FullName = "Alam Test",
+                        Username = "2001776",
                         PasswordHash = BCrypt.Net.BCrypt.HashPassword("P@ssw0rd123"),
                         Role = "Student",
                     });
@@ -188,8 +188,8 @@ namespace CodeACarUnitTest
                     context.Users.Add(new User
                     {
                         Id = 2,
-                        FullName = "Instructor 1",
-                        Username = "instructor1",
+                        FullName = "Teacher 1",
+                        Username = "teacher1",
                         PasswordHash = BCrypt.Net.BCrypt.HashPassword("P@ssw0rd123"),
                         Role = "Teacher",
                     });
@@ -197,8 +197,8 @@ namespace CodeACarUnitTest
                     context.Users.Add(new User
                     {
                         Id = 3,
-                        FullName = "John Doe",
-                        Username = "200123456",
+                        FullName = "Alam Test",
+                        Username = "2001776",
                         PasswordHash = BCrypt.Net.BCrypt.HashPassword("P@ssw0rd123"),
                         Role = "Student",
                     });
@@ -261,8 +261,8 @@ namespace CodeACarUnitTest
                     context.Users.Add(new User
                     {
                         Id = 2,
-                        FullName = "Instructor 1",
-                        Username = "instructor1",
+                        FullName = "Teacher 1",
+                        Username = "teacher1",
                         PasswordHash = BCrypt.Net.BCrypt.HashPassword("P@ssw0rd123"),
                         Role = "Teacher",
                     });
@@ -270,8 +270,8 @@ namespace CodeACarUnitTest
                     context.Users.Add(new User
                     {
                         Id = 3,
-                        FullName = "John Doe",
-                        Username = "200123456",
+                        FullName = "Alam Test",
+                        Username = "2001776",
                         PasswordHash = BCrypt.Net.BCrypt.HashPassword("P@ssw0rd123"),
                         Role = "Student",
                     });
@@ -335,8 +335,8 @@ namespace CodeACarUnitTest
                     context.Users.Add(new User
                     {
                         Id = 2,
-                        FullName = "Instructor 1",
-                        Username = "instructor1",
+                        FullName = "Teacher 1",
+                        Username = "teacher1",
                         PasswordHash = BCrypt.Net.BCrypt.HashPassword("P@ssw0rd123"),
                         Role = "Teacher",
                     });
@@ -344,8 +344,8 @@ namespace CodeACarUnitTest
                     context.Users.Add(new User
                     {
                         Id = 3,
-                        FullName = "John Doe",
-                        Username = "200123456",
+                        FullName = "Alam Test",
+                        Username = "2001776",
                         PasswordHash = BCrypt.Net.BCrypt.HashPassword("P@ssw0rd123"),
                         Role = "Student",
                     });
@@ -354,7 +354,7 @@ namespace CodeACarUnitTest
                     {
                         ChallengeId = 1,
                         Name = "Challenge 1",
-                        ChallengeImage = "https://res.cloudinary.com/dj6afbyih/image/upload/v1638074732/Screenshot_2021-11-28_at_12.43.44_wtfcwf.png",
+                        ChallengeImage = "https://res.cloudinary.com/dkhzest5h/image/upload/v1638724343/Slide4_pls6lg.jpg",
                         Solution = "MOV[4:1:3] MOV[4:1:3]"
                     });
                 }
@@ -416,8 +416,8 @@ namespace CodeACarUnitTest
                     context.Users.Add(new User
                     {
                         Id = 2,
-                        FullName = "Instructor 1",
-                        Username = "instructor1",
+                        FullName = "Teacher 1",
+                        Username = "teacher1",
                         PasswordHash = BCrypt.Net.BCrypt.HashPassword("P@ssw0rd123"),
                         Role = "Teacher",
                     });
@@ -425,8 +425,8 @@ namespace CodeACarUnitTest
                     context.Users.Add(new User
                     {
                         Id = 3,
-                        FullName = "John Doe",
-                        Username = "200123456",
+                        FullName = "Alam Test",
+                        Username = "2001776",
                         PasswordHash = BCrypt.Net.BCrypt.HashPassword("P@ssw0rd123"),
                         Role = "Student",
                     });
@@ -490,8 +490,8 @@ namespace CodeACarUnitTest
                     context.Users.Add(new User
                     {
                         Id = 2,
-                        FullName = "Instructor 1",
-                        Username = "instructor1",
+                        FullName = "Teacher 1",
+                        Username = "teacher1",
                         PasswordHash = BCrypt.Net.BCrypt.HashPassword("P@ssw0rd123"),
                         Role = "Teacher",
                     });
@@ -499,8 +499,8 @@ namespace CodeACarUnitTest
                     context.Users.Add(new User
                     {
                         Id = 3,
-                        FullName = "John Doe",
-                        Username = "200123456",
+                        FullName = "Alam Test",
+                        Username = "2001776",
                         PasswordHash = BCrypt.Net.BCrypt.HashPassword("P@ssw0rd123"),
                         Role = "Student",
                     });
@@ -511,8 +511,8 @@ namespace CodeACarUnitTest
             // Use clean instance of database with seeded data to conduct the unit test
             using (var context = new ApplicationDbContext(options))
             {
-                // Create a mock Json data containing the information of the Challenge input by a Facilitator
-                var json = "{ 'ChallengeImage':'https://res.cloudinary.com/dj6afbyih/image/upload/v1637652773/ict1004/w89refxygucg8kqxs8ea.png','Solution':'RRLFS', Name: 'Challenge 123' }";
+                // Create a mock Json data containing the information of the Challenge input by a Teacher
+                var json = "{ 'ChallengeImage':'https://res.cloudinary.com/dkhzest5h/image/upload/v1638724343/Slide1_vs0hnu.jpg','Solution':'MOV[2:1:3] MOV[3:1:3] MOV[3:1:3]', Name: 'Challenge Test' }";
 
                 // Assign the mock Json to a mock MemoryStream
                 var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
@@ -575,8 +575,8 @@ namespace CodeACarUnitTest
                     context.Users.Add(new User
                     {
                         Id = 2,
-                        FullName = "Instructor 1",
-                        Username = "instructor1",
+                        FullName = "Teacher 1",
+                        Username = "teacher1",
                         PasswordHash = BCrypt.Net.BCrypt.HashPassword("P@ssw0rd123"),
                         Role = "Teacher",
                     });
@@ -584,8 +584,8 @@ namespace CodeACarUnitTest
                     context.Users.Add(new User
                     {
                         Id = 3,
-                        FullName = "John Doe",
-                        Username = "200123456",
+                        FullName = "Alam Test",
+                        Username = "2001776",
                         PasswordHash = BCrypt.Net.BCrypt.HashPassword("P@ssw0rd123"),
                         Role = "Student",
                     });
@@ -596,8 +596,8 @@ namespace CodeACarUnitTest
             // Use clean instance of database with seeded data to conduct the unit test
             using (var context = new ApplicationDbContext(options))
             {
-                // Create a mock Json data containing the information of the Challenge input by a Facilitator
-                var json = "{ 'ChallengeImage':'https://res.cloudinary.com/dj6afbyih/image/upload/v1637652773/ict1004/w89refxygucg8kqxs8ea.png','Solution':'RRLFS', Name: [] }";
+                // Create a mock Json data containing the information of the Challenge input by a Teacher
+                var json = "{ 'ChallengeImage':'https://res.cloudinary.com/dkhzest5h/image/upload/v1638724343/Slide1_vs0hnu.jpg','Solution':'MOV[2:1:3] MOV[3:1:3] MOV[3:1:3]', Name: [] }";
 
                 // Assign the mock Json to a mock MemoryStream
                 var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
@@ -660,8 +660,8 @@ namespace CodeACarUnitTest
                     context.Users.Add(new User
                     {
                         Id = 2,
-                        FullName = "Instructor 1",
-                        Username = "instructor1",
+                        FullName = "Teacher 1",
+                        Username = "teacher1",
                         PasswordHash = BCrypt.Net.BCrypt.HashPassword("P@ssw0rd123"),
                         Role = "Teacher",
                     });
@@ -669,8 +669,8 @@ namespace CodeACarUnitTest
                     context.Users.Add(new User
                     {
                         Id = 3,
-                        FullName = "John Doe",
-                        Username = "200123456",
+                        FullName = "Alam Test",
+                        Username = "2001776",
                         PasswordHash = BCrypt.Net.BCrypt.HashPassword("P@ssw0rd123"),
                         Role = "Student",
                     });
@@ -681,7 +681,7 @@ namespace CodeACarUnitTest
                     {
                         ChallengeId = 1,
                         Name = "Challenge 1",
-                        ChallengeImage = "https://res.cloudinary.com/dj6afbyih/image/upload/v1638074732/Screenshot_2021-11-28_at_12.43.44_wtfcwf.png",
+                        ChallengeImage = "https://res.cloudinary.com/dkhzest5h/image/upload/v1638724343/Slide4_pls6lg.jpg",
                         Solution = "MOV[4:1:3] MOV[4:1:3]"
                     });
                 }
@@ -691,8 +691,8 @@ namespace CodeACarUnitTest
             // Use clean instance of database with seeded data to conduct the unit test
             using (var context = new ApplicationDbContext(options))
             {
-                // Create a mock Json data containing the information of the Challenge input by a Facilitator
-                var json = "{ 'ChallengeImage':'https://res.cloudinary.com/dj6afbyih/image/upload/v1637652773/ict1004/w89refxygucg8kqxs8ea.png','Solution':'MOV[4:1:3] MOV[2:1:3] MOV[2:1:3] MOV[4:1:3]', Name: 'Challenge 123' }";
+                // Create a mock Json data containing the information of the Challenge input by a Teacher
+                var json = "{ 'ChallengeImage':'https://res.cloudinary.com/dkhzest5h/image/upload/v1638724343/Slide1_vs0hnu.jpg','Solution':'MOV[2:1:3] MOV[3:1:3] MOV[3:1:3]', Name: 'Challenge Test' }";
 
                 // Assign the mock Json to a mock MemoryStream
                 var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
@@ -755,8 +755,8 @@ namespace CodeACarUnitTest
                     context.Users.Add(new User
                     {
                         Id = 2,
-                        FullName = "Instructor 1",
-                        Username = "instructor1",
+                        FullName = "Teacher 1",
+                        Username = "teacher1",
                         PasswordHash = BCrypt.Net.BCrypt.HashPassword("P@ssw0rd123"),
                         Role = "Teacher",
                     });
@@ -764,8 +764,8 @@ namespace CodeACarUnitTest
                     context.Users.Add(new User
                     {
                         Id = 3,
-                        FullName = "John Doe",
-                        Username = "200123456",
+                        FullName = "Alam Test",
+                        Username = "2001776",
                         PasswordHash = BCrypt.Net.BCrypt.HashPassword("P@ssw0rd123"),
                         Role = "Student",
                     });
@@ -776,7 +776,7 @@ namespace CodeACarUnitTest
                     {
                         ChallengeId = 1,
                         Name = "Challenge 1",
-                        ChallengeImage = "https://res.cloudinary.com/dj6afbyih/image/upload/v1638074732/Screenshot_2021-11-28_at_12.43.44_wtfcwf.png",
+                        ChallengeImage = "https://res.cloudinary.com/dkhzest5h/image/upload/v1638724343/Slide4_pls6lg.jpg",
                         Solution = "MOV[4:1:3] MOV[4:1:3]"
                     });
                 }
@@ -786,8 +786,8 @@ namespace CodeACarUnitTest
             // Use clean instance of database with seeded data to conduct the unit test
             using (var context = new ApplicationDbContext(options))
             {
-                // Create a mock Json data containing the information of the Challenge input by a Facilitator
-                var json = "{ 'ChallengeImage':'https://res.cloudinary.com/dj6afbyih/image/upload/v1637652773/ict1004/w89refxygucg8kqxs8ea.png','Solution':'MOV[4:1:3] MOV[2:1:3] MOV[2:1:3] MOV[4:1:3]', Name: 'Challenge 123' }";
+                // Create a mock Json data containing the information of the Challenge input by a Teacher
+                var json = "{ 'ChallengeImage':'https://res.cloudinary.com/dkhzest5h/image/upload/v1638724343/Slide1_vs0hnu.jpg','Solution':'MOV[4:1:3] MOV[2:1:3] MOV[2:1:3] MOV[4:1:3]', Name: 'Challenge Test' }";
 
                 // Assign the mock Json to a mock MemoryStream
                 var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
@@ -850,8 +850,8 @@ namespace CodeACarUnitTest
                     context.Users.Add(new User
                     {
                         Id = 2,
-                        FullName = "Instructor 1",
-                        Username = "instructor1",
+                        FullName = "Teacher 1",
+                        Username = "teacher1",
                         PasswordHash = BCrypt.Net.BCrypt.HashPassword("P@ssw0rd123"),
                         Role = "Teacher",
                     });
@@ -859,8 +859,8 @@ namespace CodeACarUnitTest
                     context.Users.Add(new User
                     {
                         Id = 3,
-                        FullName = "John Doe",
-                        Username = "200123456",
+                        FullName = "Alam Test",
+                        Username = "2001776",
                         PasswordHash = BCrypt.Net.BCrypt.HashPassword("P@ssw0rd123"),
                         Role = "Student",
                     });
@@ -871,7 +871,7 @@ namespace CodeACarUnitTest
                     {
                         ChallengeId = 1,
                         Name = "Challenge 1",
-                        ChallengeImage = "https://res.cloudinary.com/dj6afbyih/image/upload/v1638074732/Screenshot_2021-11-28_at_12.43.44_wtfcwf.png",
+                        ChallengeImage = "https://res.cloudinary.com/dkhzest5h/image/upload/v1638724343/Slide4_pls6lg.jpg",
                         Solution = "MOV[4:1:3] MOV[4:1:3]"
                     });
                 }
@@ -881,8 +881,8 @@ namespace CodeACarUnitTest
             // Use clean instance of database with seeded data to conduct the unit test
             using (var context = new ApplicationDbContext(options))
             {
-                // Create a mock Json data containing the information of the Challenge input by a Facilitator
-                var json = "{ 'ChallengeImage':'https://res.cloudinary.com/dj6afbyih/image/upload/v1637652773/ict1004/w89refxygucg8kqxs8ea.png','Solution':'MOV[4:1:3] MOV[2:1:3] MOV[2:1:3] MOV[4:1:3]', Name: [] }";
+                // Create a mock Json data containing the information of the Challenge input by a Teacher
+                var json = "{ 'ChallengeImage':'https://res.cloudinary.com/dkhzest5h/image/upload/v1638724343/Slide1_vs0hnu.jpg','Solution':'MOV[4:1:3] MOV[2:1:3] MOV[2:1:3] MOV[4:1:3]', Name: [] }";
 
                 // Assign the mock Json to a mock MemoryStream
                 var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
@@ -945,8 +945,8 @@ namespace CodeACarUnitTest
                     context.Users.Add(new User
                     {
                         Id = 2,
-                        FullName = "Instructor 1",
-                        Username = "instructor1",
+                        FullName = "Teacher 1",
+                        Username = "teacher1",
                         PasswordHash = BCrypt.Net.BCrypt.HashPassword("P@ssw0rd123"),
                         Role = "Teacher",
                     });
@@ -954,8 +954,8 @@ namespace CodeACarUnitTest
                     context.Users.Add(new User
                     {
                         Id = 3,
-                        FullName = "John Doe",
-                        Username = "200123456",
+                        FullName = "Alam Test",
+                        Username = "2001776",
                         PasswordHash = BCrypt.Net.BCrypt.HashPassword("P@ssw0rd123"),
                         Role = "Student",
                     });
@@ -966,7 +966,7 @@ namespace CodeACarUnitTest
                     {
                         ChallengeId = 1,
                         Name = "Challenge 1",
-                        ChallengeImage = "https://res.cloudinary.com/dj6afbyih/image/upload/v1638074732/Screenshot_2021-11-28_at_12.43.44_wtfcwf.png",
+                        ChallengeImage = "https://res.cloudinary.com/dkhzest5h/image/upload/v1638724343/Slide4_pls6lg.jpg",
                         Solution = "MOV[4:1:3] MOV[4:1:3]"
                     });
                 }
@@ -1031,8 +1031,8 @@ namespace CodeACarUnitTest
                     context.Users.Add(new User
                     {
                         Id = 2,
-                        FullName = "Instructor 1",
-                        Username = "instructor1",
+                        FullName = "Teacher 1",
+                        Username = "teacher1",
                         PasswordHash = BCrypt.Net.BCrypt.HashPassword("P@ssw0rd123"),
                         Role = "Teacher",
                     });
@@ -1040,8 +1040,8 @@ namespace CodeACarUnitTest
                     context.Users.Add(new User
                     {
                         Id = 3,
-                        FullName = "John Doe",
-                        Username = "200123456",
+                        FullName = "Alam Test",
+                        Username = "2001776",
                         PasswordHash = BCrypt.Net.BCrypt.HashPassword("P@ssw0rd123"),
                         Role = "Student",
                     });
@@ -1052,7 +1052,7 @@ namespace CodeACarUnitTest
                     {
                         ChallengeId = 1,
                         Name = "Challenge 1",
-                        ChallengeImage = "https://res.cloudinary.com/dj6afbyih/image/upload/v1638074732/Screenshot_2021-11-28_at_12.43.44_wtfcwf.png",
+                        ChallengeImage = "https://res.cloudinary.com/dkhzest5h/image/upload/v1638724343/Slide4_pls6lg.jpg",
                         Solution = "MOV[4:1:3] MOV[4:1:3]"
                     });
                 }

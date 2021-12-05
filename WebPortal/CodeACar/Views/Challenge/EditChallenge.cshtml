@@ -2,6 +2,24 @@
 @{
     ViewData["Title"] = "Edit Challenge";
 }
+<div class="status-message-box" id="updating">
+    <p class="status-message"><i class="fas fa-sync-alt fa-spin"></i> Updating</p>
+</div>
+<div class="status-message-box" id="update-success">
+    <p class="status-message"><i class="far fa-check-circle text-success"></i><br />Update Successful!</p>
+</div>
+<div class="status-message-box" id="update-failed">
+    <p class="status-message"><i class="fas fa-exclamation-circle text-danger"></i><br />Update Failed!</p>
+</div>
+<div class="status-message-box" id="deleting">
+    <p class="status-message"><i class="fas fa-slash fa-spin"></i> Deleting</p>
+</div>
+<div class="status-message-box" id="delete-success">
+    <p class="status-message"><i class="fas fa-trash text-success"></i><br />Delete Successful!</p>
+</div>
+<div class="status-message-box" id="delete-failed">
+    <p class="status-message"><i class="fas fa-exclamation-circle text-danger"></i><br />Delete Failed!</p>
+</div>
 <div class="row">
     <div class="col-md-3">
         <a asp-action="Index" asp-controller="Challenge" id="btnBack" class="btn btn-success btn-block"><i class="fas fa-sign-out-alt"></i> Back</a>
@@ -63,6 +81,7 @@
         });
 
         $("#btnDelete").click(function () {
+            $('#deleting').show();
             $.ajax({
                 url: "/challenge/delete/@Model.ChallengeId",
                 type: "POST",
@@ -70,13 +89,21 @@
                 contentType: "application/json",
                 data: "",
                 success: function (response) {
-                    location.replace('/Challenge/Index');
+                    $('#deleting').hide();
+                    $('#delete-success').show();
+                    setTimeout(function(){location.replace('/Challenge/Index');}, 3000);
                 },
-                error: function (error) { console.log(error); }
+                error: function (error) {
+                    console.log(error);
+                    $('#deleting').hide();
+                    $('#delete-failed').show();
+                    setTimeout(function(){$('#delete-failed').hide();}, 3000);
+                }
             });
         });
 
         $("#btnSubmit").click(function () {
+            $('#updating').show();
             if (currentFile == null) {
                 submitForm($('#imgMap').attr('src'));
             }
@@ -105,9 +132,16 @@
                 contentType: "application/json",
                 data: webFormDataInString,
                 success: function (response) {
-                    location.replace('/Challenge/Index');
+                    $('#updating').hide();
+                    $('#update-success').show();
+                    setTimeout(function(){location.replace('/Challenge/Index');}, 3000);
                 },
-                error: function (error) { console.log(error); }
+                error: function (error) {
+                    console.log(error);
+                    $('#updating').hide();
+                    $('#update-failed').show();
+                    setTimeout(function(){$('#update-failed').hide();}, 3000);
+                }
             });
         }
 
@@ -129,6 +163,9 @@
                 },
                 error: function (error) {
                     console.log(error);
+                    $('#updating').hide();
+                    $('#update-failed').show();
+                    setTimeout(function(){$('#update-failed').hide();}, 3000);
                 },
             });
         }
