@@ -28,9 +28,9 @@ char Port[] = "80";
 char HTTP_Request[] = "GET / \r\n\r\n";
 //char HTTP_Request[] = "GET /ackR105L106E0.R0L45E0.R110L111E0.R0L45E0.R100L106E0.R0L43E0.R104L108E0.R114L112E0. \r\n\r\n";
 //    char AP_Name[] = "iPhone";
-//    char AP_Pwd[] = "baesbutt";
-char AP_Name[] = "Magnifique";
-char AP_Pwd[] = "berrypie41";
+//    char AP_Pwd[] = "testing";
+char AP_Name[] = "wifiname";
+char AP_Pwd[] = "wifipwdpwd";
 char ack[200] = "GET /ack";
 
 uint32_t HTTP_Request_Size = sizeof(HTTP_Request) - 1;
