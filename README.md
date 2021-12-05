@@ -31,6 +31,10 @@ The project is coded using the [.NET Core 3.1.415 SDK](https://dotnet.microsoft.
 # Building & Running the Project
 1. Open the `CodeACar.sln` file with a Visual Studio IDE
 2. Right-click the Project `CodeACar.sln` & Click `Build`
+3. Open the `app.py` file in a Python IDE, preferably Pycharm
+4. Edit the `host='ip address here'`, at line 120 to a locally assigned ip address, or localhost.
+5. Right-click `app.py` and select `Run Flask (app.py)`
+6. The Flask website is now accessible via any browser, using the ip address specified in step 4.
 
 # Seed Data
 To aid the testing of the system, we have seeded some data into the database for demostration purposes. The information of the seed data can be viewed in the [Wiki](https://github.com/cweiwenr/ICT2101-team-p3-3/wiki/Seed-Data).
