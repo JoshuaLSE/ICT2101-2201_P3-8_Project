@@ -9,5 +9,7 @@ namespace CodeACar.Models
 
         //Db sets representing the tables
         public DbSet<User> Users { get; set; }
+        public DbSet<Challenge> Challenges { get; set; }
+        public DbSet<ChallengeHistory> ChallengeHistories { get; set; }
     }
 }
