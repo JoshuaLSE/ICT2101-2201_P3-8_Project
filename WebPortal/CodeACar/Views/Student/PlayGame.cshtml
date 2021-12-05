@@ -11,8 +11,14 @@
     <script src="~/lib/blockly/javascript_compressed.js"></script>
 }
 
-<div id="loading">
-  <p id="loading-image"><i class='fa fa-spinner fa-spin'></i> Running</p>
+<div class="status-message-box" id="loading">
+  <p class="status-message" id="loading-message"><i class='fa fa-spinner fa-spin'></i> Running</p>
+</div>
+<div class="status-message-box" id="correct">
+  <p class="status-message" id="correct-message"><i class="fas fa-check-circle text-success"></i><br />Challenge Completed!</p>
+</div>
+<div class="status-message-box" id="wrong">
+  <p class="status-message" id="wrong-message-box"><i class="fas fa-times-circle text-danger"></i><br />Challenge Failed!</p>
 </div>
 <div class="row">
     <div class="col-md-6 text-center mb-2">
@@ -25,9 +31,7 @@
             </div>
             <div class="col-md-4">
                 <button type="button" class="btn btn-info btn-block" id="btnSubmit">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-play-circle-fill" viewBox="0 0 16 16">
-                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5z" />
-                    </svg> Run
+                    <i class="fas fa-play"></i> Run
                 </button>
             </div>
         </div>
@@ -192,10 +196,17 @@
                 contentType: "application/json",
                 data: webFormDataInString,
                 success: function (response) { /* response is the object containing the response received from the controller */
+                    $('#loading').hide();
+                    $('#correct').show();
                     console.log(response);
-                    location.replace('/ChallengeHistory/View/@Model.ChallengeId');
+                    setTimeout(function(){location.replace('/ChallengeHistory/View/@Model.ChallengeId');}, 3000);
                 },
-                error: function (error) { console.log(error); location.replace('/ChallengeHistory/View/@Model.ChallengeId'); }
+                error: function (error) {
+                    $('#loading').hide();
+                    $('#wrong').show();
+                    console.log(error);
+                    setTimeout(function(){location.replace('/ChallengeHistory/View/@Model.ChallengeId');}, 3000);
+                }
             });
         }
     });
