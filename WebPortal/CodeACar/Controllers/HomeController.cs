@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using CodeACar.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -28,7 +24,23 @@ namespace CodeACar.Controllers
             else
             {
                 ViewData["role"] = userRole; //Store the role of the user inside the view data for authenticating the user
-                return View("index"); //Return the view with the cshtml file "Index.cshtml" in the "User" folder under "Views"
+
+                if (userRole == "Admin")
+                {
+                    return RedirectToAction("ManageTeachers", "Admin"); //Redirect the manage teachers
+                }
+                else if (userRole == "Teacher")
+                {
+                    return RedirectToAction("ManageStudents", "Teacher"); //Redirect the manage teachers}
+                }
+                else if (userRole == "Student")
+                {
+                    return RedirectToAction("Index", "Student"); //Redirect the user to the Student Home Page
+                }
+                else
+                {
+                    return RedirectToAction("Login", "User");
+                }
             }
         }
 

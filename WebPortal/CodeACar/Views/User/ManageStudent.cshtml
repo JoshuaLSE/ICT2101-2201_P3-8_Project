@@ -1,0 +1,35 @@
+﻿@model IEnumerable<CodeACar.Models.User>
+@{
+    ViewData["Title"] = "Student Management";
+}
+<div class="text-left">
+    <h1 class="display-4">Student Management</h1>
+</div>
+<div class="d-flex flex-row-reverse mb-2">
+    <a class="btn btn-info" asp-action="CreateUser" asp-controller="User">Add New Student</a>
+</div>
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Student Id</th>
+                <th scope="col">Full Name</th>
+                <th scope="col">Role</th>
+                <th scope="col">Username</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.Id)</td>
+                    <td>@Html.DisplayFor(modelItem => item.FullName)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Role)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Username)</td>
+                    <td><a asp-action="UpdateUser" asp-route-id="@item.Id" class="btn btn-sm btn-info">Edit</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
