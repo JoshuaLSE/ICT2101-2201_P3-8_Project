@@ -84,10 +84,16 @@ This is the Control Flow Graph for our Challenge Controller Class:
 
 # Project Charts
 ### Burndown Chart
-![INSERTBURNDOWNCHARTHERE]()
+The image below shows our burndown chart.
+
+![M3BURNDOWNCHART](https://res.cloudinary.com/dkhzest5h/image/upload/v1638726787/burndown_frrzid.png)
 
 ### Gantt Chart
-![INSERTGANTTCHARTIMAGEHERE]()
+The image below shows our gantt chart cropped to only Milestone 3. This is so that the contents can be viewed clearly. For the full burndown chart, head over to our google excel link below.
+
+![M3GANTTCHART](https://res.cloudinary.com/dkhzest5h/image/upload/v1638726579/just_M3_yzxhqb.png)
+
+Full Gantt Chart - [Google Excel Chart](https://docs.google.com/spreadsheets/d/1ffrToW92ubDyzK-C5VmEj9U5471KRce2Ttyc-IQZ98U/edit?usp=sharing)
 
 Head on over to our project board to view our completed progress! -> [Project Board](https://github.com/alamsah2/ICT2101-2201_P3-8_Project/projects/1)<br>
 Our team members: [@Alam](https://github.com/users/alamsah2/) [@Hui Qi](https://github.com/lohhuiqi) [@Joshua](https://github.com/JoshuaLSE) [@Matthew](https://github.com/Matt1998)
