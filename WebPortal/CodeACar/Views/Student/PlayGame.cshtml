@@ -11,14 +11,23 @@
     <script src="~/lib/blockly/javascript_compressed.js"></script>
 }
 
-<div class="status-message-box" id="loading">
-  <p class="status-message"><i class='fa fa-spinner fa-pulse'></i> Running</p>
+<div class="status-message-box" id="sending">
+  <p class="status-message"><i class='fa fa-spinner fa-pulse status-message-icon'></i><br />Sending Command</p>
 </div>
-<div class="status-message-box" id="correct">
-  <p class="status-message"><i class="fas fa-check-circle text-success"></i><br />Challenge Completed!</p>
+<div class="status-message-box" id="sent">
+  <p class="status-message"><i class="fas fa-check-circle text-success status-message-icon"></i><br />Command Successfully Sent!</p>
 </div>
-<div class="status-message-box" id="wrong">
-  <p class="status-message"><i class="fas fa-times-circle text-danger"></i><br />Challenge Failed!</p>
+<div class="status-message-box" id="error">
+  <p class="status-message"><i class="fas fa-times-circle text-danger status-message-icon"></i><br />Error When Sending Command.</p>
+</div>
+<div class="status-message-box" id="running">
+  <p class="status-message"><i class='fa fa-spinner fa-pulse status-message-icon'></i><br />Running Challenge<br />Watch the car move!</p>
+</div>
+<div class="status-message-box" id="complete">
+  <p class="status-message"><i class="fas fa-check-circle text-success status-message-icon"></i><br />Challenge Completed!</p>
+</div>
+<div class="status-message-box" id="failed">
+  <p class="status-message"><i class="fas fa-times-circle text-danger status-message-icon"></i><br />Challenge Failed!</p>
 </div>
 <div class="row">
     <div class="col-md-6 text-center mb-2">
@@ -135,7 +144,7 @@
     setupBlockly();
     $(document).ready(function () {
         $('#btnSubmit').click(function () {
-            $('#loading').show();
+            $('#sending').show();
             SubmitForm();
         });
 
@@ -196,16 +205,33 @@
                 contentType: "application/json",
                 data: webFormDataInString,
                 success: function (response) { /* response is the object containing the response received from the controller */
-                    $('#loading').hide();
-                    $('#correct').show();
                     console.log(response);
-                    setTimeout(function(){location.replace('/ChallengeHistory/View/@Model.ChallengeId');}, 3000);
+                    $('#sending').hide();
+                    $('#sent').show();
+                    setTimeout(function(){
+                        $('#sent').hide();
+                        $('#running').show();
+                        setTimeout(function(){
+                            $('#running').hide();
+                            if (response['challengeCommandResult'] == "true")
+                            {
+                                $('#complete').show();
+                            }
+                            else
+                            {
+                                $('#failed').show();
+                            }
+                            setTimeout(function(){location.replace('/ChallengeHistory/View/@Model.ChallengeId');}, 3000);
+                        }, 10000);
+                    }, 2000);
                 },
                 error: function (error) {
-                    $('#loading').hide();
-                    $('#wrong').show();
                     console.log(error);
-                    setTimeout(function(){location.replace('/ChallengeHistory/View/@Model.ChallengeId');}, 3000);
+                    $('#sending').hide();
+                    $('#error').show();
+                    setTimeout(function(){
+                        $('#error').hide();
+                    }, 2000);
                 }
             });
         }

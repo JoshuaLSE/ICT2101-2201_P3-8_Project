@@ -69,6 +69,7 @@ namespace CodeACar.Controllers
         [Route("/Student/SendCarCommand/{challengeId}")]
         public async Task<IActionResult> SendCarCommand(int challengeId)
         {
+            var challengeCmdResult = "true";
             try
             {
                 using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
@@ -92,12 +93,10 @@ namespace CodeACar.Controllers
                     newChallengeHistory.Command = challengeHistoryInfo.Command;
                     newChallengeHistory.UserId = studentId;
                     newChallengeHistory.IsCompleted = challengeHistoryInfo.Command.TrimEnd() == challenge.Solution;// Assign whether student's solution match the challenge's solution to IsCompleted
+                    challengeCmdResult = newChallengeHistory.IsCompleted.ToString();
+                    
 
-                    // Add Challenge History into Database
-                    _context.ChallengeHistories.Add(newChallengeHistory);
-                    _context.SaveChanges();
-
-                    // Once the challenge history has been added into the database, send the car command to flask server
+                    // Send the car command to flask server
                     string flaskServerApiUrl = "http://192.168.1.5/sendCarCommand";
                     var httpWebRequest = (HttpWebRequest)WebRequest.Create(flaskServerApiUrl);
                     httpWebRequest.ContentType = "application/json";
@@ -112,14 +111,18 @@ namespace CodeACar.Controllers
 
                     var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse(); // sends out the http POST request
 
+                    // Once command sent successfully and response received, add Challenge History into Database
+                    _context.ChallengeHistories.Add(newChallengeHistory);
+                    _context.SaveChanges();
+
                     // Send success message to student
-                    var responseObj = new { message = "Successfully sent command to the car!" };
+                    var responseObj = new { message = "Successfully sent command to the car!", challengeCommandResult = challengeCmdResult };
                     return Ok(responseObj); // Send success message to the user
                 }
              }
             catch (Exception ex)
             {
-                var errorResponseObj = new { message = "Something went wrong when sending the commands to the car! Please contact an system administrator." };
+                var errorResponseObj = new { message = "Something went wrong when sending the commands to the car! Please contact an system administrator.", challengeCommandResult = challengeCmdResult };
                 return BadRequest(errorResponseObj);
             }
         }
