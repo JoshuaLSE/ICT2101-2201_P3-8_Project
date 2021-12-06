@@ -106,25 +106,25 @@
         Blockly.JavaScript['control_right'] = function (block) {
             var statements_name = Blockly.JavaScript.statementToCode(block, 'NAME');
             // MOV[DIRECTION:SPEED:DURATION]
-            var code = 'MOV[4:1:3] ';
+            var code = 'MOV[4:1:1] ';
             return code;
         };
         Blockly.JavaScript['control_forward'] = function (block) {
             var statements_name = Blockly.JavaScript.statementToCode(block, 'NAME');
             // TODO: Assemble JavaScript into code variable.
-            var code = 'MOV[3:1:3] ';
+            var code = 'MOV[1:1:3] ';
             return code;
         };
         Blockly.JavaScript['control_left'] = function (block) {
             var statements_name = Blockly.JavaScript.statementToCode(block, 'NAME');
             // TODO: Assemble JavaScript into code variable.
-            var code = 'MOV[2:1:3] ';
+            var code = 'MOV[3:1:1] ';
             return code;
         };
         Blockly.JavaScript['control_backward'] = function (block) {
             var statements_name = Blockly.JavaScript.statementToCode(block, 'NAME');
             // TODO: Assemble JavaScript into code variable.
-            var code = 'MOV[1:1:3] ';
+            var code = 'MOV[2:1:3] ';
             return code;
         };
 
