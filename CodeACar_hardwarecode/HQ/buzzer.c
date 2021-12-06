@@ -14,14 +14,6 @@ int buzzer_set = 0;
 #define DUTYCYCLE 0
 
 /* Timer_A PWM Configuration Parameter */
-//Timer_A_PWMConfig pwmConfigBuzzer = {
-//    TIMER_A_CLOCKSOURCE_SMCLK,          // SMCLK Clock Source = 3MHz
-//    TIMER_A_CLOCKSOURCE_DIVIDER_1,      // Reference clock become 3MHz/1 = 3,000,000
-//    PERIOD,                             // period = 10,000 tick in 1 second
-//    TIMER_A_CAPTURECOMPARE_REGISTER_2,  // CCR2
-//    TIMER_A_OUTPUTMODE_RESET_SET,       // set/reset output mode
-//    DUTYCYCLE                           // DutyCycle = 0
-//};
 Timer_A_PWMConfig pwmConfigBuzzer = {
 TIMER_A_CLOCKSOURCE_SMCLK, // SMCLK Clock Source = 24MHz (Josh: after set DCO_24)
         TIMER_A_CLOCKSOURCE_DIVIDER_8,           // Reference clock become 24MHz
@@ -45,18 +37,6 @@ TIMER_A_CLOCKSOURCE_SMCLK,                          // SMCLK Clock Source = 3MHz
 
 void buzzer(void)
 {
-//    GPIO_setAsPeripheralModuleFunctionOutputPin(GPIO_PORT_P2, GPIO_PIN5,GPIO_PRIMARY_MODULE_FUNCTION);
-
-    /* SMCLK clock Frequency 24,000,000 */
-//    CS_setDCOCenteredFrequency(CS_DCO_FREQUENCY_24);          // Joshua: Skip due to previously setting in initWifi();
-    /* Link the TIMER_A0 to PWMConfig (need to use the correct Timer_A see MSP432 Data Sheet) */
-
-    /* Configuring Timer_A1 for Up Mode */
-//    Timer_A_configureUpMode(TIMER_A1_BASE, &upConfigBuzzer);
-    /* Enabling interrupts and starting the timer */
-//    Interrupt_enableSleepOnIsrExit();
-//    Interrupt_enableInterrupt(INT_TA1_0);
-//    Timer_A_startCounter(TIMER_A1_BASE, TIMER_A_UP_MODE);
     buzzer_set = 1; //Joshua: To let TA interrupt handle it
     pwmConfigBuzzer.dutyCycle = 0;    // Joshua: Reset to 0 each time.
     GPIO_setAsPeripheralModuleFunctionOutputPin(GPIO_PORT_P2, GPIO_PIN7,
@@ -65,9 +45,6 @@ void buzzer(void)
     Timer_A_configureUpMode(TIMER_A3_BASE, &upConfigBuzzer); //Josh: change to A3 due to A0 -> PWM, A1 -> PID, A2 -> USM
     Interrupt_enableInterrupt(INT_TA3_0);                //Josh: reflected to A3
     Timer_A_startCounter(TIMER_A3_BASE, TIMER_A_UP_MODE);
-
-    /* Enabling MASTER interrupts */
-//    Interrupt_enableMaster();                                 //Josh: Not neccessary, called during another init.
 }
 
 // Timer Interrupt
