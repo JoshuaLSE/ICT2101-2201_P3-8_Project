@@ -58,7 +58,7 @@ We have removed the need for the user to register the car as we have automatical
 <img src="https://res.cloudinary.com/dkhzest5h/image/upload/v1638717602/P3-8_Diagrams_-_Use_Case_Diagram_q3roub.png" alt="option"/>
 
 # User Acceptance Testing Demo (UAT)
--- will be filled up once josh has recorded the vid --
+[![UAT Demo](https://img.youtube.com/vi/coC1rEBBZEQ/maxresdefault.jpg)](https://youtu.be/coC1rEBBZEQ)
 
 # White Box Testing (WBT)
 Our team will be testing the `ChallengeController` class using Visual Studio's in-built testing framework, XUnit.
