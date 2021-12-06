@@ -61,19 +61,7 @@
                                 <i class="fas fa-check-circle text-success"></i>
                             </td>
                             <td>
-                                @if (statistic.Statistic != null)
-                                {
-                                    var i = 1;
-                                    var commandList = item.Command.Split(" ");
-                                <ul>
-                                    @foreach (var stat in statistic.Statistic)
-                                    {
-                                        var emBrakeUsed = (stat.Emergency == "1") ? "True" : "False";
-                                    <li class="mb-2">Statistic #@i<br /><b>Command</b>: @commandList[i - 1]<br/><b>Emergency Brake</b>: @emBrakeUsed<br /><b>Left Speed</b>: @stat.Left<br /><b>Right Speed</b>: @stat.Right</li>
-                                        i++;
-                                    }
-                                </ul>
-                                }
+                                <a asp-action="ViewRaw" asp-controller="ChallengeHistory" asp-route-id="@item.ChallengeHistoryId">View Stats</a>
                             </td>
                         </tr>
                     }
@@ -116,19 +104,7 @@
                                 <i class="fas fa-times-circle text-danger"></i>
                             </td>
                             <td>
-                                @if (statistic.Statistic != null)
-                                {
-                                    var i = 1;
-                                    var commandList = item.Command.Split(" ");
-                                <ul>
-                                    @foreach (var stat in statistic.Statistic)
-                                    {
-                                        var emBrakeUsed = (stat.Emergency == "1") ? "True" : "False";
-                                    <li class="mb-2">Statistic #@i<br /><b>Command</b>: @commandList[i - 1]<br/><b>Emergency Brake</b>: @emBrakeUsed<br /><b>Left Speed</b>: @stat.Left<br /><b>Right Speed</b>: @stat.Right</li>
-                                        i++;
-                                    }
-                                </ul>
-                                }
+                                <a asp-action="ViewRaw" asp-controller="ChallengeHistory" asp-route-id="@item.ChallengeHistoryId">View Stats</a>
                             </td>
                         </tr>
                     }
