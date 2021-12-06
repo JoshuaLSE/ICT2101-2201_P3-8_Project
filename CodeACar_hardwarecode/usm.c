@@ -7,7 +7,10 @@
 
 uint32_t SR04IntTimes;
 
-// Configure Timer A2
+/*
+ * USM Hardware Configuration
+ * Configure Timer A2
+ */
 void Initialise_USM(void)
 {
     /* Timer_A UpMode Configuration Parameter */
@@ -30,6 +33,9 @@ void Initialise_USM(void)
 
 }
 
+/*
+ * Get distance (active wait: while)
+ */
 float getHCSR04Distance(void)
 {
     uint32_t pulseduration = 0;
