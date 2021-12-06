@@ -1,0 +1,35 @@
+﻿@model IEnumerable<CodeACar.Models.Challenge>
+@{
+    ViewData["Title"] = "Challenge Management";
+}
+<div class="text-left">
+    <h1 class="display-4">Challenge Management</h1>
+</div>
+<div class="d-flex flex-row-reverse mb-2">
+    <a class="btn btn-info" asp-action="Create" asp-controller="Challenge">Add New Challenge</a>
+</div>
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Challenge Id</th>
+                <th scope="col">Map Image</th>
+                <th scope="col">Challenge Name</th>
+                <th scope="col">Solution</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.ChallengeId)</td>
+                    <td><img src="@item.ChallengeImage" alt="" width="90" /></td>
+                    <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Solution)</td>
+                    <td><a asp-action="Edit" asp-route-id="@item.ChallengeId" class="btn btn-sm btn-info">Edit</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

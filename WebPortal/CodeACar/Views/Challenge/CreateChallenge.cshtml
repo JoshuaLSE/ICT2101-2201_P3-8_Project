@@ -1,0 +1,131 @@
+﻿@{
+    ViewData["Title"] = "Create New Challenge";
+}
+<div class="status-message-box" id="creating">
+    <p class="status-message"><i class='fa fa-spinner fa-pulse status-message-icon'></i><br />Creating</p>
+</div>
+<div class="status-message-box" id="create-success">
+    <p class="status-message"><i class="fas fa-check-circle text-success status-message-icon"></i><br />Challenge Created!</p>
+</div>
+<div class="status-message-box" id="create-failed">
+    <p class="status-message"><i class="fas fa-exclamation-triangle text-danger status-message-icon"></i><br />Challenge Creation Failed!</p>
+</div>
+<div class="row">
+    <div class="col-md-3">
+        <a asp-action="Index" asp-controller="Challenge" id="btnBack" class="btn btn-success btn-block"><i class="fas fa-sign-out-alt"></i> Back</a>
+    </div>
+    <div class="col-md-9"></div>
+</div>
+<div class="text-center">
+    <h1 class="display-4">Add New Challenge</h1>
+</div>
+<div class="col-lg-8 mx-auto mt-3">
+    <div class="card">
+        <div class="card-body">
+            <h2 class="text-info">Challenge Information</h2>
+            <form>
+                <div class="form-group row">
+                    <label for="tbImage" class="col-sm-2 col-form-label">Challenge Image</label>
+                    <div class="col-sm-10">
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="tbImage">
+                            <label id="lblFile" class="custom-file-label" for="customFile">Choose file</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="tbName" class="col-sm-2 col-form-label">Challenge Name</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="tbName" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="tbSolution" class="col-sm-2 col-form-label">Solution</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="tbSolution">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-12">
+                        <span id="btnSubmit" class="btn btn-primary btn-block">Create</span>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    var CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dkhzest5h/image/upload";
+    var CLOUDINARY_UPLOAD_PRESET = "a80jzqjw";
+    var currentFile = null;
+    $(document).ready(function () {
+
+        $("#tbImage").on("change", function (event) {
+            currentFile = event.target.files[0];
+            $("#lblFile").text($('input[type=file]').val().split('\\').pop());
+        });
+
+        $("#btnSubmit").click(function () {
+            $('#creating').show();
+            uploadToCloudinaryAndSubmit();
+        });
+
+        function submitForm(imageUri) {
+            function WebFormData(name, imageUri, solution) {
+                this.Name = name;
+                this.ChallengeImage = imageUri;
+                this.Solution = solution;
+            }
+            var webFormData = new WebFormData($("#tbName").val(), imageUri, $("#tbSolution").val());
+
+            var webFormDataInString = JSON.stringify(webFormData);
+
+            console.log(webFormData);
+            console.log(webFormDataInString);
+
+            $.ajax({
+                url: "/challenge/create",
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json",
+                data: webFormDataInString,
+                success: function (response) {
+                    $('#creating').hide();
+                    $('#create-success').show();
+                    setTimeout(function () { location.replace('/Challenge/Index'); }, 3000);
+                },
+                error: function (error) {
+                    console.log(error);
+                    $('#creating').hide();
+                    $('#create-failed').show();
+                    setTimeout(function () { $('#create-failed').hide(); }, 3000);
+                }
+            });
+        }
+
+        function uploadToCloudinaryAndSubmit() {
+            var formData = new FormData();
+            formData.append("file", currentFile);
+            formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+
+            $.ajax({
+                url: CLOUDINARY_URL,
+                type: "POST",
+                contentType: false,
+                processData: false,
+                data: formData,
+                success: function (response) {
+                    var imageUri = response["url"]; //Link of the uploaded image
+
+                    submitForm(imageUri)
+                },
+                error: function (error) {
+                    console.log(error);
+                    $('#creating').hide();
+                    $('#create-failed').show();
+                    setTimeout(function () { $('#create-failed').hide(); }, 3000);
+                },
+            });
+        }
+    });</script>

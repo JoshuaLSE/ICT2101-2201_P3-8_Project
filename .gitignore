@@ -84,5 +84,7 @@ _[Ss]cripts
 *.nupkg
 *.ncrunchsolution
 *.dot[Cc]over
+*.testlog
+*.manifest
 .vs
 WebPortal/CodeACar/.vs/CodeACar/DesignTimeBuild/.dtbcache.v2

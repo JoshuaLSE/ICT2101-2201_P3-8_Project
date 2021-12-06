@@ -1,0 +1,240 @@
+﻿@model CodeACar.Models.Challenge;
+@{
+    ViewData["Title"] = "Play Challenge";
+}
+
+@section Scripts
+{
+    <script src="~/lib/blockly/blockly_compressed.js?v=202106271134"></script>
+    <script src="~/lib/blockly/blocks_compressed.js?v=202106271134"></script>
+    <script src="~/lib/blockly/msg/js/en.js?v=202106271134"></script>
+    <script src="~/lib/blockly/javascript_compressed.js"></script>
+}
+
+<div class="status-message-box" id="sending">
+  <p class="status-message"><i class='fa fa-spinner fa-pulse status-message-icon'></i><br />Sending Command</p>
+</div>
+<div class="status-message-box" id="sent">
+  <p class="status-message"><i class="fas fa-check-circle text-success status-message-icon"></i><br />Command Successfully Sent!</p>
+</div>
+<div class="status-message-box" id="error">
+  <p class="status-message"><i class="fas fa-times-circle text-danger status-message-icon"></i><br />Error When Sending Command.</p>
+</div>
+<div class="status-message-box" id="running">
+  <p class="status-message"><i class='fa fa-spinner fa-pulse status-message-icon'></i><br />Running Challenge<br />Watch the car move!</p>
+</div>
+<div class="status-message-box" id="complete">
+  <p class="status-message"><i class="fas fa-check-circle text-success status-message-icon"></i><br />Challenge Completed!</p>
+</div>
+<div class="status-message-box" id="failed">
+  <p class="status-message"><i class="fas fa-times-circle text-danger status-message-icon"></i><br />Challenge Failed!</p>
+</div>
+<div class="row">
+    <div class="col-md-6 text-center mb-2">
+        <img src="@Model.ChallengeImage" alt="mapImage" width="300" />
+    </div>
+    <div class="col-md-6">
+        <div class="row">
+            <div class="col-md-8">
+                <p class="text-justify">Solve the challenge by choosing your directions to form a list. Once done, hit the run button to move the car!</p>
+            </div>
+            <div class="col-md-4">
+                <button type="button" class="btn btn-info btn-block" id="btnSubmit">
+                    <i class="fas fa-play"></i> Run
+                </button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div id="blocklyDiv" style="height: 480px; width: 100%;"></div>
+                <xml id="toolbox" style="display: none">
+                    <block type="control_left"></block>
+                    <block type="control_forward"></block>
+                    <block type="control_backward"></block>
+                    <block type="control_right"></block>
+                </xml>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Start of Javascript Portion-->
+<script type="text/javascript">
+    var workspace = null;
+    function setupBlockly()
+    {
+        Blockly.Blocks['control_left'] = {
+            init: function () {
+                this.appendDummyInput()
+                    .setAlign(Blockly.ALIGN_CENTRE)
+                    .appendField("Go left");
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setColour(230);
+                this.setTooltip("");
+                this.setHelpUrl("");
+            }
+        };
+        Blockly.Blocks['control_right'] = {
+            init: function () {
+                this.appendDummyInput()
+                    .setAlign(Blockly.ALIGN_CENTRE)
+                    .appendField("Go right");
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setColour(120);
+                this.setTooltip("");
+                this.setHelpUrl("");
+            }
+        };
+        Blockly.Blocks['control_forward'] = {
+            init: function () {
+                this.appendDummyInput()
+                    .setAlign(Blockly.ALIGN_CENTRE)
+                    .appendField("Go forward");
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setColour(20);
+                this.setTooltip("");
+                this.setHelpUrl("");
+            }
+        };
+        Blockly.Blocks['control_backward'] = {
+            init: function () {
+                this.appendDummyInput()
+                    .setAlign(Blockly.ALIGN_CENTRE)
+                    .appendField("Go backward");
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setColour(65);
+                this.setTooltip("");
+                this.setHelpUrl("");
+            }
+        };
+
+        Blockly.JavaScript['control_right'] = function (block) {
+            var statements_name = Blockly.JavaScript.statementToCode(block, 'NAME');
+            // MOV[DIRECTION:SPEED:DURATION]
+            var code = 'MOV[4:1:1] ';
+            return code;
+        };
+        Blockly.JavaScript['control_forward'] = function (block) {
+            var statements_name = Blockly.JavaScript.statementToCode(block, 'NAME');
+            // TODO: Assemble JavaScript into code variable.
+            var code = 'MOV[1:1:3] ';
+            return code;
+        };
+        Blockly.JavaScript['control_left'] = function (block) {
+            var statements_name = Blockly.JavaScript.statementToCode(block, 'NAME');
+            // TODO: Assemble JavaScript into code variable.
+            var code = 'MOV[3:1:1] ';
+            return code;
+        };
+        Blockly.JavaScript['control_backward'] = function (block) {
+            var statements_name = Blockly.JavaScript.statementToCode(block, 'NAME');
+            // TODO: Assemble JavaScript into code variable.
+            var code = 'MOV[2:1:3] ';
+            return code;
+        };
+
+        workspace = Blockly.inject('blocklyDiv',
+            { toolbox: document.getElementById('toolbox') });
+    }
+
+    setupBlockly();
+    $(document).ready(function () {
+        $('#btnSubmit').click(function () {
+            $('#sending').show();
+            SubmitForm();
+        });
+
+        // This function will simplify the blockly command for the robot car to process
+        function SimplifyCarCommand(blocklyCommand)
+        {
+            console.log("Received From the Blockly Workspace: ", blocklyCommand);
+
+            var indexOfKeyword = blocklyCommand.indexOf("for");
+
+            if (indexOfKeyword >= 0) {
+                var forLoopCommand = blocklyCommand.substring(indexOfKeyword, blocklyCommand.length - indexOfKeyword);
+                var carCommand = "";
+
+                var commandBeforeLoopResult = blocklyCommand.match(/(.*)for/);
+                var repeatCommandResult = blocklyCommand.match(/{\n  (.*)}/);
+                var countResult = blocklyCommand.match(/count < (.*);/);
+                var commandAfterLoopResult = blocklyCommand.match(/}\n(.*)/);
+
+                /* Append the commands before the fot loop to the carCommand variable */
+                carCommand += commandBeforeLoopResult[1];
+
+                /* Repeat the commands in the for loop and append it to the carCommand variable */
+                for (i = 0; i < parseInt(countResult[1]); i++) {
+                    carCommand += repeatCommandResult[1];
+                }
+
+                /* Append the commands after the for loop to the carCommand variable */
+                carCommand += commandAfterLoopResult[1];
+
+                console.log("Simplified Command:", carCommand);
+
+                return carCommand;
+            }
+            else {
+                return blocklyCommand;
+            }
+        }
+
+        /* This function will submit the data from the blocky code to the API */
+        function SubmitForm()
+        {
+            var carCommand = SimplifyCarCommand(Blockly.JavaScript.workspaceToCode(workspace));
+
+            /* Constructor representing the SendCarCommandDataModel in the Models folder */
+            function SendCarCommandDataModel(carCommand) {
+                this.Command = carCommand;
+            }
+
+            /* Assign the values to the contructor so that it can be converted into Json and sent over to the API */
+            var webFormData = new SendCarCommandDataModel(carCommand);
+
+            var webFormDataInString = JSON.stringify(webFormData);
+            $.ajax({
+                    url: "/student/SendCarCommand/@Model.ChallengeId",
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json",
+                data: webFormDataInString,
+                success: function (response) { /* response is the object containing the response received from the controller */
+                    console.log(response);
+                    $('#sending').hide();
+                    $('#sent').show();
+                    setTimeout(function(){
+                        $('#sent').hide();
+                        $('#running').show();
+                        setTimeout(function(){
+                            $('#running').hide();
+                            if (response['challengeCommandResult'] == "true")
+                            {
+                                $('#complete').show();
+                            }
+                            else
+                            {
+                                $('#failed').show();
+                            }
+                            setTimeout(function(){location.replace('/ChallengeHistory/View/@Model.ChallengeId');}, 3000);
+                        }, 10000);
+                    }, 2000);
+                },
+                error: function (error) {
+                    console.log(error);
+                    $('#sending').hide();
+                    $('#error').show();
+                    setTimeout(function(){
+                        $('#error').hide();
+                    }, 2000);
+                }
+            });
+        }
+    });
+</script>
+<!--End of Javascript Portion-->
