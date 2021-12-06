@@ -95,5 +95,28 @@ namespace CodeACar.Controllers
                 return BadRequest(responseObj);
             }
         }
+
+        [Route("ChallengeHistory/ViewRaw/{historyId}")]
+        public IActionResult ViewRaw(int historyId)
+        {
+            var role = HttpContext.Request.Cookies["role"].ToString();
+
+            if (string.IsNullOrEmpty(role) || role != "Student")
+            {
+                return RedirectToAction("Login", "User");
+            }
+            else
+            {
+                var studentId = int.Parse(HttpContext.Request.Cookies["studentId"].ToString());
+                ViewData["role"] = role.ToString();
+
+                var challengeHistories = _context.ChallengeHistories.Include(c => c.Challenge).FirstOrDefault(c => c.ChallengeHistoryId == historyId);
+                if (challengeHistories == null)
+                    return RedirectToAction("Index", "ChallengeHistory");
+
+                return View("View", challengeHistories);
+            }
+            
+        }
     }
 }

@@ -1,0 +1,17 @@
+﻿@model CodeACar.Models.ChallengeHistory
+@{
+    var statistic = (string.IsNullOrEmpty(Model.Statistics)) ? new CodeACar.Models.WebFormData.CarStatisticJson() : Newtonsoft.Json.JsonConvert.DeserializeObject<CodeACar.Models.WebFormData.CarStatisticJson>(Model.Statistics);
+ }
+@if (statistic.Statistic != null)
+{
+    var i = 1;
+    var commandList = Model.Command.Split(" ");
+    <ul>
+        @foreach (var stat in statistic.Statistic)
+        {
+            var emBrakeUsed = (stat.Emergency == "1") ? "True" : "False";
+            <li class="mb-2">Statistic #@i<br /><b>Command</b>: @commandList[i - 1]<br /><b>Emergency Brake</b>: @emBrakeUsed<br /><b>Left Speed</b>: @stat.Left<br /><b>Right Speed</b>: @stat.Right</li>
+            i++;
+        }
+    </ul>
+}

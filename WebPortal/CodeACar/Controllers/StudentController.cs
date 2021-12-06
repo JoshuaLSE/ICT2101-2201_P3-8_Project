@@ -70,6 +70,7 @@ namespace CodeACar.Controllers
         public async Task<IActionResult> SendCarCommand(int challengeId)
         {
             var challengeCmdResult = "true";
+            var historyCount = 0; //locally store the challengeHistoryID to send to flask API
             try
             {
                 using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
@@ -82,6 +83,15 @@ namespace CodeACar.Controllers
                     var student = _context.Users.FirstOrDefault(stud => stud.Id == studentId);
 
                     var challenge = _context.Challenges.FirstOrDefault(challenge => challenge.ChallengeId == challengeId);
+                    var getAllChallengeHistory = _context.ChallengeHistories.ToList();
+
+                    if (getAllChallengeHistory != null)
+                    {
+                        foreach (var item in getAllChallengeHistory)
+                        {
+                            historyCount = item.ChallengeHistoryId; //set historyCount as the latest challengeHistoryID
+                        }
+                    }
 
                     if (challenge == null)
                     {
@@ -103,7 +113,7 @@ namespace CodeACar.Controllers
 
                     using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
                     {
-                        json = "{\"carCommand\":\""+ newChallengeHistory.Command +"\", \"challengeHistoryId\":\"" + newChallengeHistory.ChallengeHistoryId + "\"}";
+                        json = "{\"carCommand\":\"" + newChallengeHistory.Command + "\", \"challengeHistoryId\":\"" + (historyCount + 1) + "\"}";
 
                         streamWriter.Write(json);
                     }
@@ -118,10 +128,10 @@ namespace CodeACar.Controllers
                     var responseObj = new { message = "Successfully sent command to the car!", challengeCommandResult = challengeCmdResult };
                     return Ok(responseObj); // Send success message to the user
                 }
-             }
+            }
             catch (Exception ex)
             {
-                var errorResponseObj = new { message = "Something went wrong when sending the commands to the car! Please contact an system administrator.", challengeCommandResult = challengeCmdResult };
+                var errorResponseObj = new { message = "Something went wrong when sending the commands to the car! Please contact the system administrator.", challengeCommandResult = challengeCmdResult };
                 return BadRequest(errorResponseObj);
             }
         }
