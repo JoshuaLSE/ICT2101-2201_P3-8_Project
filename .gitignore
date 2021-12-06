@@ -86,3 +86,5 @@ _[Ss]cripts
 *.dot[Cc]over
 *.testlog
 *.manifest
+.vs
+WebPortal/CodeACar/.vs/CodeACar/DesignTimeBuild/.dtbcache.v2
