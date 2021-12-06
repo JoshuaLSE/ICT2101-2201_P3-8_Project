@@ -16,21 +16,22 @@
 
 int Mutex = 1;
 int Wifi = 1;
+
 /*Initialise arrays with 0*/
 int counterR[30] = { 0 };
 int counterL[30] = { 0 };
 int ET[30] = { 0 };
 int currentStage = 0;
 
-char HTTP_WebPage[] = "192.168.1.5";
-//    char HTTP_WebPage[] = "172.20.10.6";
+char HTTP_WebPage[] = "172.20.10.6";
 char Port[] = "80";
 char HTTP_Request[] = "GET / \r\n\r\n";
+/* Test string */
 //char HTTP_Request[] = "GET /ackR105L106E0.R0L45E0.R110L111E0.R0L45E0.R100L106E0.R0L43E0.R104L108E0.R114L112E0. \r\n\r\n";
-//    char AP_Name[] = "iPhone";
-//    char AP_Pwd[] = "baesbutt";
-char AP_Name[] = "Magnifique";
-char AP_Pwd[] = "berrypie41";
+char AP_Name[] = "iPhone";
+char AP_Pwd[] = "testing1";
+//char AP_Name[] = "wifiname";
+//char AP_Pwd[] = "wifipwdpwd";
 char ack[200] = "GET /ack";
 
 uint32_t HTTP_Request_Size = sizeof(HTTP_Request) - 1;
@@ -216,6 +217,8 @@ int acknowledge()
 
 /*
  * Sequential series of commands to connect to the WIFI
+ * USES UART, EUSCIA -> TO PASS AT+ COMMANDS TO ESP8266
+ *
  * Stages:
  * 0) Hard reset to clear previous settings
  * 1) Check UART connectivity with ESP8266
@@ -305,6 +308,9 @@ int runWifi()
     return 0;
 }
 
+/*
+ * Tests the commandHandler and its ability to parse data
+ */
 void test()
 {
     initWifi();
@@ -333,14 +339,6 @@ void main()
     Initialise_USM();
     irLineTracking_UsingTimer();
     Interrupt_enableMaster();
-//    initWifi();
-//    buzzer();
-//    while (1)
-//    {
-//
-//    }
-//    printf("Size of %d Size of %d\n", strlen(HTTP_Request),sizeof(HTTP_Request));
-//    fflush(stdout);
     /*
      * If status is anything other than 0 (correct code execution)
      * Terminate and rerun the Wifi module.
