@@ -93,8 +93,7 @@ namespace CodeACar.Controllers
                     newChallengeHistory.Command = challengeHistoryInfo.Command;
                     newChallengeHistory.UserId = studentId;
                     newChallengeHistory.IsCompleted = challengeHistoryInfo.Command.TrimEnd() == challenge.Solution;// Assign whether student's solution match the challenge's solution to IsCompleted
-                    challengeCmdResult = newChallengeHistory.IsCompleted.ToString();
-                    
+                    challengeCmdResult = newChallengeHistory.IsCompleted.ToString().ToLower();
 
                     // Send the car command to flask server
                     string flaskServerApiUrl = "http://192.168.1.5/sendCarCommand";
