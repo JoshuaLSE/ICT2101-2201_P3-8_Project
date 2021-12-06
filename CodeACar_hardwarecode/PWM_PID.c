@@ -7,10 +7,10 @@
 #include <UART_Driver.h>
 #include <MSPIO.h>
 
-//  _____      ____  __  __   ___   ___ ___   _   ___ _    ___ ___
-// | _ \ \    / /  \/  | \ \ / /_\ | _ \_ _| /_\ | _ ) |  | __/ __|
-// |  _/\ \/\/ /| |\/| |  \ V / _ \|   /| | / _ \| _ \ |__| _|\__ \
-// |_|   \_/\_/ |_|  |_|   \_/_/ \_\_|_\___/_/ \_\___/____|___|___/
+//  _____      ____  __
+// | _ \ \    / /  \/  |
+// |  _/\ \/\/ /| |\/| |
+// |_|   \_/\_/ |_|  |_|
 //
 
 #define PERIOD      10000
@@ -18,8 +18,8 @@
 
 /*
  * Movement API is MOV[direction, speed, duration]
- * Direction:   1 - forward, 2 - right, 3 - backwards, 4 - left
- * Duration:    5 to 10 seconds
+ * Direction:   1 - forward, 3 - right, 2 - backwards, 4 - left
+ * Duration:    1 - 3 seconds (fixed on Web Portal)
  */
 
 int COUNTR = 0;
@@ -32,7 +32,7 @@ int Speed;
 int Duration;
 int TimerCount;
 
-int SPEED[2] = { 5000, 5500 };
+int SPEED[2] = { 5000, 5000 };
 /*
  * Timer_A PWM Configuration Parameters
  */
@@ -155,6 +155,9 @@ void pid(void)
     Counter_R_Sum += currentError_R;
 
     Timer_A_generatePWM(TIMER_A0_BASE, &pwmConfigR);
+    /*
+     * The following is the printf test to retrieve wheel data for PID tweaking
+     */
 //    printf("L: %d, R: %d\n", pwmConfigL.dutyCycle, pwmConfigR.dutyCycle);
 //    fflush(stdout);
 //    printf("TargetSpeed: %.3f\n"
