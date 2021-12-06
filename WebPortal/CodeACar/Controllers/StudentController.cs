@@ -131,7 +131,7 @@ namespace CodeACar.Controllers
             }
             catch (Exception ex)
             {
-                var errorResponseObj = new { message = "Something went wrong when sending the commands to the car! Please contact an system administrator.", challengeCommandResult = challengeCmdResult };
+                var errorResponseObj = new { message = "Something went wrong when sending the commands to the car! Please contact the system administrator.", challengeCommandResult = challengeCmdResult };
                 return BadRequest(errorResponseObj);
             }
         }
