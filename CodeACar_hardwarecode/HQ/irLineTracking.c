@@ -9,33 +9,36 @@
  * Left IR Line      Right IR line
  * VCC: 3V3          3V3
  * GND: GND          GND
- * D0: P1.6          P1.7
- * UPDATED: Josh: P4.4, P4.5
- *
+ * D0: P4.4          P4.5
  */
 
-void irLineTracking_UsingTimer(void)
+void irLineTracking(void)
 {
-    /* Get Left IRLine input value */
+    /* Set P4.4 as input pin for Left IRLine */
     GPIO_setAsInputPin(GPIO_PORT_P4, GPIO_PIN4);
 
-    /* Get Right IRLine input value */
+    /* Set P4.5 as input pin for Right IRLine */
     GPIO_setAsInputPin(GPIO_PORT_P4, GPIO_PIN5);
 }
 
 // Joshua's Adapted Code
 void boundsCheck(void)
 {
+    /* Read Left IRLine input value */
     uint8_t leftIRInputValue = GPIO_getInputPinValue(GPIO_PORT_P4, GPIO_PIN4);
-    if (leftIRInputValue == 1)
+    /* If detect black, it will trigger stop */
+    if (leftIRInputValue != 1)
     {
         emergencyTrig = 1;
         Mutex = 1;
         printf("E Left\n");
         fflush(stdout);
     }
+
+    /* Read Right IRLine input value */
     uint8_t rightIRInputValue = GPIO_getInputPinValue(GPIO_PORT_P4, GPIO_PIN5);
-    if (rightIRInputValue == 1)
+    /* If detect black, it will trigger stop */
+    if (rightIRInputValue != 1)
     {
         emergencyTrig = 1;
         Mutex = 1;
